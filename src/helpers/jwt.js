@@ -31,7 +31,7 @@ async function authenticateToken(req, res, next) {
     jwt.verify(token, process.env.JWT_SECRET_KEY, function (error, decoded) {
         if (error) {
             console.log(error)
-            return res.status(500).json({
+            return res.status(401).json({
                 auth: error.message,
                 message: "Failed to authenticate token.",
             });

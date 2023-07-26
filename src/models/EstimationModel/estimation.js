@@ -1,0 +1,68 @@
+const mongoose = require('mongoose');
+
+const estimationSchema = new mongoose.Schema({
+    client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client',
+        required: true
+    },
+    products: [
+        {
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
+    estimationDate: {
+        type: Date,
+        required: true
+    },
+    currency: {
+        type: String,
+        required: true
+    },
+    sign: {
+        data: Buffer,
+        contentType: String
+    },
+    subTotal: {
+        type: Number,
+        required: true
+    },
+    discount: {
+        type: Number,
+        default: 0
+    },
+    taxes: [
+        {
+            percentage: {
+                type: Number,
+                required: true
+            },
+            amount: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
+    estimationNo: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    totalAmount: {
+        type: Number,
+        required: true
+    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+});
+
+const Estimation = mongoose.model('Estimation', estimationSchema);
+
+module.exports = Estimation;

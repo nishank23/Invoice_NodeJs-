@@ -27,6 +27,7 @@ const userprofilerouter = require('./src/routes/userprofilerouter');
 const locationRoutes = require('./src/routes/locationrouter');
 const clientRouter = require('./src/routes/clientrouter');
 const productRouter = require('./src/routes/productroutes');
+const estimateRouter = require('./src/routes/estimationrouter');
 
 
 app.use(function(req, res, next) {
@@ -42,6 +43,7 @@ app.use('/api/v1',userprofilerouter);
 app.use('/api/v1',locationRoutes);
 app.use('/api/v1',clientRouter);
 app.use('/api/v1/products',productRouter);
+app.use('/api/v1/',estimateRouter);
 const uploadDirectory = path.join(__dirname, 'uploads/product'); // Path to the directory where images are uploaded
 
 // Define a route to serve the uploaded image files
