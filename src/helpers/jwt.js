@@ -22,7 +22,7 @@ async function authenticateToken(req, res, next) {
 
     var token = extractToken(req);
     if (!token) {
-        return res.status(403).json({
+        return res.status(401).json({
             auth: false,
             message: "No token provided.",
         });
@@ -30,7 +30,7 @@ async function authenticateToken(req, res, next) {
 
     jwt.verify(token, process.env.JWT_SECRET_KEY, function (error, decoded) {
         if (error) {
-            console.log(error)
+            console.log(error.message);
             return res.status(401).json({
                 auth: error.message,
                 message: "Failed to authenticate token.",
