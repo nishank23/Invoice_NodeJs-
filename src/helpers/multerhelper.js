@@ -3,6 +3,13 @@ const path = require('path');
 const fs = require('fs');
 
 const generateStorage = (name) => {
+
+    const allowedImageExtensions = {
+        jpeg: 'image/jpeg',
+        jpg: 'image/jpeg',
+        png: 'image/png',
+        webp: 'image/webp',
+    };
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
             const folderPath = path.join('public/uploads', name);
@@ -17,8 +24,19 @@ const generateStorage = (name) => {
         },
 
         filename: (req, file, cb) => {
-            const ext = file.mimetype.split('/')[1];
-            cb(null, `admin-${file.fieldname}-${Date.now()}.${ext}`);
+            const ext = file.originalname.split('.').pop().toLowerCase();
+            const isValidImage = allowedImageExtensions.hasOwnProperty(ext);
+
+            if (!isValidImage) {
+                return cb(new Error('Invalid file type. Only PNG, JPEG, and WebP images are allowed.'));
+            }
+
+            const filename = `admin-${file.fieldname}-${Date.now()}.${ext}`;
+
+            // Set the desired content type (MIME type) based on the file extension
+            file.mimetype = allowedImageExtensions[ext];
+
+            cb(null, filename);
         },
     });
 

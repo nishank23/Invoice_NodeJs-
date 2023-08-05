@@ -1,4 +1,5 @@
 const Estimation = require('../models/EstimationModel/estimation');
+const UserProfile = require('../models/UserModels/userprofile');
 
 exports.getLatestEstimationNo = async (req, res) => {
     try {
@@ -21,9 +22,25 @@ exports.getLatestEstimationNo = async (req, res) => {
 };
 exports.createEstimation = async (req, res) => {
     try {
+
+        console.log("tried");
+
+        console.log(req.body);
         const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
 
-        const { client, products, estimationDate, currency, sign, subTotal, discount, taxes, totalAmount } = req.body;
+        if (!req.file) {
+            // No file was uploaded
+            return res.status(400).json({success: false, message: 'No file was uploaded.'});
+        }
+        const signImage = req.file.path;
+
+        console.log(signImage);
+
+        const { client, products, estimationDate, currency, subTotal, discount, taxes, totalAmount } = req.body;
+
+
+        const parsedProducts = JSON.parse(products);
+        const parsedTaxes = JSON.parse(taxes);
 
         // Get the latest estimation number for the current user
         const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: -1 });
@@ -36,25 +53,73 @@ exports.createEstimation = async (req, res) => {
             estimationNo = `EST${numberPart + 1}`;
         }
 
+        console.log(parsedProducts);
+        console.log(parsedTaxes);
+
+
         const estimation = new Estimation({
             client,
-            products,
+           products: parsedProducts,
             estimationNo,
             estimationDate,
             currency,
-            sign,
+            sign:signImage,
             subTotal,
             discount,
-            taxes,
+           taxes: parsedTaxes,
             totalAmount,
             userId
+
         });
+        await estimation.save();
+
+        console.log(estimation);
+
 
         res.status(201).json({data:estimation,success:true});
     } catch (error) {
+
+        console.log(error.message);
         res.status(500).json({ error: 'Failed to create the estimation' });
     }
 };
+
+exports.getAllEstimateData = async (req,res) =>{
+    const estimationId = req.params.id;
+
+    try {
+        const estimation = await Estimation.findById(estimationId)
+            .populate({
+                path: 'products.product',
+                select: 'name price currencySymbol',
+            })
+            .populate('client');
+
+
+        const userprofile = await UserProfile.findOne({userId:estimation.userId})
+
+        if (!estimation) {
+            return res.status(404).json({ message: 'Estimation not found' });
+        }
+
+        console.log(estimation.sign);
+
+
+/*
+        res.render('invoice', { estimation });
+*/
+
+
+        res.render('myinvoice', {estimation: estimation,userprofile: userprofile });
+
+
+
+    }catch (e) {
+        console.log(e);
+        res.status(500).json({ error: 'Failed to get the estimation' });
+
+    }
+}
 
 // Get all estimations
 exports.getAllEstimations = async (req, res) => {

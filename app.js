@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const setBaseUrlMiddleware = require('./src/helpers/middleware');
 
 // const {
 //     verifyForgetPassword
@@ -14,10 +15,19 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;*/
 
 
+app.set('view engine', 'ejs');
+
+// Set the views directory (folder where EJS templates are located)
+app.set('views', path.resolve("./views"));
+console.log("mypath" +path.join(__dirname, 'views'))
+
 app.use(express.json());
+app.use(setBaseUrlMiddleware);
 
-app.use('/public/uploads/product', express.static('public/uploads/product'));
+/*app.use('/public/uploads/product', express.static('public/uploads/product'));*/
+app.use('/public/', express.static('public/'));
 
+app.use(express.static('public'));
 
 
 
@@ -36,7 +46,6 @@ app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
-
 
 app.use('/api/v1',authrouter);
 app.use('/api/v1',userprofilerouter);

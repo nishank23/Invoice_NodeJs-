@@ -28,8 +28,7 @@ const estimationSchema = new mongoose.Schema({
         required: true
     },
     sign: {
-        data: Buffer,
-        contentType: String
+        type: String,
     },
     subTotal: {
         type: Number,
@@ -42,12 +41,16 @@ const estimationSchema = new mongoose.Schema({
     taxes: [
         {
             percentage: {
-                type: Number,
+                type: String,
                 required: true
             },
-            amount: {
-                type: Number,
+            name: {
+                type: String,
                 required: true
+            },
+            amount:{
+                type:Number,
+                required:true
             }
         }
     ],

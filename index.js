@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const Country = require('./src/models/addressModels/country');
 const State = require('./src/models/addressModels/state');
 const City = require('./src/models/addressModels/city');
+const path = require("path");
 
 
 /*const firebaseapp = initializeApp({
@@ -24,7 +25,7 @@ connectDB()
 
 app.get('/', (req, res) => {
 
-    res.send("Testing on this server");
+    res.render('home');
 
     console.log("data")
 });
