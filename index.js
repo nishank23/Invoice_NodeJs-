@@ -18,7 +18,14 @@ const path = require("path");
     // databaseURL: 'https://your-project-id.firebaseio.com',
 });*/
 
-initializeApp();
+/*var admin = require("firebase-admin");
+
+var serviceAccount = require("path/to/serviceAccountKey.json");*/
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://invoicemanager-909f5-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
 connectDB()
     .then(() => console.log('Database connected successfully'))
     .catch((err) => console.error(err));

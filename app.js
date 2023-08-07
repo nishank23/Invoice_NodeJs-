@@ -60,6 +60,9 @@ app.use('/api/v1/',estimateRouter);
 app.get('/reset-success', (req, res) => {
     res.sendFile(__dirname + '/views/reset-success.html');
 });
+app.get('/verify-success', (req, res) => {
+    res.sendFile(__dirname + '/views/verify-success.html');
+});
 
 
 /*src.get('/scrape', async (req, res) => {

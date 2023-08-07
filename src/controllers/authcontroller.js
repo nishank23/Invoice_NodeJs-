@@ -8,21 +8,21 @@ const {getMessaging} = require("firebase-admin/messaging");
 // Sign up with email
 const signUpWithEmail = async (req, res) => {
     try {
-        const { email, password, fcm } = req.body;
+        const {email, password, fcm} = req.body;
 
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({email});
 
         if (existingUser) {
             if (existingUser.isEmailVerified) {
-                return res.status(400).json({ error: 'User already exists' });
+                return res.status(400).json({error: 'User already exists'});
             } else {
                 // Update existing user's details
                 const hashpwd = await genverifypass.generatePasswordHash(password);
-                await User.updateOne({ email }, { $set: { password: hashpwd, fcm } });
+                await User.updateOne({email}, {$set: {password: hashpwd, fcm}});
 
                 // Resend the verification email
-                const { token: verificationToken, expiresIn } = myjwt.generateResetToken();
+                const {token: verificationToken, expiresIn} = myjwt.generateResetToken();
                 existingUser.emailVerificationToken = verificationToken;
                 existingUser.emailVerificationExpires = new Date(Date.now() + parseDuration(expiresIn));
                 await existingUser.save();
@@ -48,7 +48,7 @@ const signUpWithEmail = async (req, res) => {
                 // Send the email
                 await transporter.sendMail(mailOptions);
 
-                return res.json({ message: 'Email verification instructions sent to email' });
+                return res.json({message: 'Email verification instructions sent to email'});
             }
         }
 
@@ -56,7 +56,7 @@ const signUpWithEmail = async (req, res) => {
         const hashpwd = await genverifypass.generatePasswordHash(password);
 
         // Generate email verification token
-        const { token: verificationToken, expiresIn } = myjwt.generateResetToken();
+        const {token: verificationToken, expiresIn} = myjwt.generateResetToken();
 
         const newUser = new User({
             email,
@@ -88,10 +88,10 @@ const signUpWithEmail = async (req, res) => {
         // Send the email
         await transporter.sendMail(mailOptions);
 
-        return res.json({ message: 'Email verification instructions sent to email' });
+        return res.json({message: 'Email verification instructions sent to email'});
     } catch (error) {
         console.log('Error signing up with email:', error);
-        res.status(500).json({ error: 'Failed to sign up with email' });
+        res.status(500).json({error: 'Failed to sign up with email'});
     }
 };
 
@@ -190,7 +190,7 @@ const forgotPassword = async (req, res) => {
         }
 
 
-        if(user.password == null){
+        if (user.password == null) {
             return res.status(400).json({error: 'User not signed up with mail'});
         }
 
@@ -245,7 +245,7 @@ const forgotPassword = async (req, res) => {
 const verifyForgetPassword = async (req, res) => {
     try {
 
-        const { token } = req.query;
+        const {token} = req.query;
         const decodedToken = Buffer.from(token, 'base64').toString();
 
         const user = await User.findOne({
@@ -262,12 +262,11 @@ const verifyForgetPassword = async (req, res) => {
         console.log(user.fcm)
 
 
-
         const message = {
             token: user.fcm,
-            data:{
-              key: 'Password Reset Token',
-              value: `${decodedToken}`
+            data: {
+                key: 'Password Reset Token',
+                value: `${decodedToken}`
             },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
 
         };
@@ -285,10 +284,10 @@ const verifyForgetPassword = async (req, res) => {
         res.status(500).json({error: 'Failed to verify reset password confirmation'});
     }
 }
-    const verifyUserEmail = async (req, res) => {
+const verifyUserEmail = async (req, res) => {
     try {
 
-        const { token } = req.query;
+        const {token} = req.query;
         const decodedToken = Buffer.from(token, 'base64').toString();
 
         const user = await User.findOne({
@@ -305,12 +304,11 @@ const verifyForgetPassword = async (req, res) => {
         console.log(user.fcm)
 
 
-
         const message = {
             token: user.fcm,
-            data:{
+            data: {
                 key: 'Verify User Token',
-                value: `${decodedToken}`
+                value: `${user}`
             },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
 
         };
@@ -322,7 +320,7 @@ const verifyForgetPassword = async (req, res) => {
 
         })
 
-        res.redirect('/reset-success');
+        res.redirect('/verify-success');
 
     } catch (error) {
         console.log(error);
@@ -335,7 +333,6 @@ const resetPassword = async (req, res) => {
     try {
         const {token} = req.params;
         const {password} = req.body;
-
 
 
         console.log(token);
@@ -351,10 +348,8 @@ const resetPassword = async (req, res) => {
         const isSamePassword = await user.comparePassword(password);
 
         if (isSamePassword) {
-            return res.status(400).json({ error: 'Cannot use the previous password' });
+            return res.status(400).json({error: 'Cannot use the previous password'});
         }
-
-
 
 
         // Generate new password hash
