@@ -3,7 +3,9 @@ const Product = require('../models/ProductModels/product');
 // Get all products
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find({});
+        const userId = req.userId;
+
+        const products = await Product.find({userId});
         res.json({success:true,productData:products});
     } catch (error) {
         res.status(500).json({error: 'Internal server error'});
@@ -13,6 +15,8 @@ const getProducts = async (req, res) => {
 // Get a specific product by ID
 const getProductById = async (req, res) => {
     try {
+        const userId = req.params.userId;
+
         const product = await Product.findById(req.params.id);
         if (!product) {
             res.status(400).json({error: 'Product not found'});
