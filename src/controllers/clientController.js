@@ -5,10 +5,12 @@ const createOrUpdateClient = async (req, res) => {
     try {
         const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
         console.log(userId);
+        console.log(req.body);
         const {clientId} = req.params.clientId;
+        const clientPhoto =  req.file.path;
 
         const {
-            clientPhoto, company, shippingAddress, billingAddress
+             company, shippingAddress, billingAddress
         } = req.body;
 
         let client = await Client.findById(clientId);

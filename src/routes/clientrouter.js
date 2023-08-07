@@ -7,7 +7,7 @@ const {authenticateToken} = require("../helpers/jwt");
 
 const upload = generateStorage('clientphoto');
 // Create or Update Client
-router.post('/clients/:clientId', authenticateToken, clientController.createOrUpdateClient);
+router.post('/clients/:clientId',upload.single('file'), authenticateToken, clientController.createOrUpdateClient);
 
 
 router.get('/clients', authenticateToken, clientController.getClientsByUser);

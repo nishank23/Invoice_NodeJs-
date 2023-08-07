@@ -8,9 +8,9 @@ const createOrUpdateUserProfile = async (req, res) => {
     try {
         const userId = req.userId;
         console.log(userId); // Assuming you have the authenticated user's ID available in req.user.id
+        const userPhoto = req.file.path;
 
         const {
-            userPhoto,
             company,
             address,
             bankInfo
