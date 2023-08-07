@@ -18,7 +18,7 @@ const path = require("path");
     // databaseURL: 'https://your-project-id.firebaseio.com',
 });*/
 
-
+initializeApp();
 connectDB()
     .then(() => console.log('Database connected successfully'))
     .catch((err) => console.error(err));
