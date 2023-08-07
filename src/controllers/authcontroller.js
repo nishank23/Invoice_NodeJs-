@@ -303,12 +303,13 @@ const verifyUserEmail = async (req, res) => {
 
         console.log(user.fcm)
 
+        const usertoken = myjwt.generateToken({userId: user._id}, process.env.JWT_SECRET_KEY);
 
         const message = {
             token: user.fcm,
             data: {
                 key: 'Verify User Token',
-                value: `${user}`
+                value: JSON.stringify({ user, token: usertoken })
             },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
 
         };
