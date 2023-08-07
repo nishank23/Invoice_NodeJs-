@@ -8,38 +8,90 @@ const {getMessaging} = require("firebase-admin/messaging");
 // Sign up with email
 const signUpWithEmail = async (req, res) => {
     try {
-        const {email, password, fcm} = req.body;
+        const { email, password, fcm } = req.body;
 
         // Check if user already exists
-        const existingUser = await User.findOne({email});
+        const existingUser = await User.findOne({ email });
+
         if (existingUser) {
-            if (existingUser.googleId && existingUser.password == null) {
-                const hashpwd = await genverifypass.generatePasswordHash(password);
-                // Update existing user
-                await User.updateOne({email}, {$set: {password: hashpwd, fcm: fcm}});
-                const token = myjwt.generateToken({userId: existingUser._id}, process.env.JWT_SECRET_KEY);
-                return res.json({user: existingUser, token}); // Send user and token in the response
+            if (existingUser.isEmailVerified) {
+                return res.status(400).json({ error: 'User already exists' });
             } else {
-                return res.status(400).json({error: 'User already exists'});
+                // Update existing user's details
+                const hashpwd = await genverifypass.generatePasswordHash(password);
+                await User.updateOne({ email }, { $set: { password: hashpwd, fcm } });
+
+                // Resend the verification email
+                const { token: verificationToken, expiresIn } = myjwt.generateResetToken();
+                existingUser.emailVerificationToken = verificationToken;
+                existingUser.emailVerificationExpires = new Date(Date.now() + parseDuration(expiresIn));
+                await existingUser.save();
+
+                const encodedToken = Buffer.from(verificationToken).toString('base64');
+                const verificationLink = `https://invoicetest-m7na.onrender.com/verify?token=${encodedToken}`;
+
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: 'bansalnishank4@gmail.com',
+                        pass: 'tddwprtfvcgyftyw',
+                    },
+                });
+
+                const mailOptions = {
+                    from: 'bansalnishank4@gmail.com',
+                    to: email,
+                    subject: 'Verify Account',
+                    text: `Please confirm on the below link to verify your account \n ${verificationLink} request after confirming the request we suggest you to move back to app to reset password`,
+                };
+
+                // Send the email
+                await transporter.sendMail(mailOptions);
+
+                return res.json({ message: 'Email verification instructions sent to email' });
             }
         }
 
-        // Hash the password
+        // If the user does not exist, proceed with new user registration
         const hashpwd = await genverifypass.generatePasswordHash(password);
 
-        // Create new user
+        // Generate email verification token
+        const { token: verificationToken, expiresIn } = myjwt.generateResetToken();
+
         const newUser = new User({
             email,
             password: hashpwd,
-            fcm: fcm
+            fcm,
+            emailVerificationToken: verificationToken,
+            emailVerificationExpires: new Date(Date.now() + parseDuration(expiresIn)), // Set verification token expiration
         });
         await newUser.save();
 
-        const token = myjwt.generateToken({userId: newUser._id}, process.env.JWT_SECRET_KEY);
-        res.json({user: newUser, token}); // Send user and token in the response
+        const encodedToken = Buffer.from(verificationToken).toString('base64');
+        const verificationLink = `https://invoicetest-m7na.onrender.com/api/v1/verify?token=${encodedToken}`;
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'bansalnishank4@gmail.com',
+                pass: 'tddwprtfvcgyftyw',
+            },
+        });
+
+        const mailOptions = {
+            from: 'bansalnishank4@gmail.com',
+            to: email,
+            subject: 'Verify Account',
+            text: `Please confirm on the below link to verify your account \n ${verificationLink} request after confirming the request we suggest you to move back to app to reset password`,
+        };
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+
+        return res.json({ message: 'Email verification instructions sent to email' });
     } catch (error) {
         console.log('Error signing up with email:', error);
-        res.status(500).json({error: 'Failed to sign up with email'});
+        res.status(500).json({ error: 'Failed to sign up with email' });
     }
 };
 
@@ -161,7 +213,7 @@ const forgotPassword = async (req, res) => {
         const encodedToken = Buffer.from(token).toString('base64');
 
 
-        const resetPasswordLink = `https://invoicetest-m7na.onrender.com/api/v1/verify?token=${encodedToken}`;
+        const resetPasswordLink = `https://invoicetest-m7na.onrender.com/verifyforget?token=${encodedToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -182,7 +234,7 @@ const forgotPassword = async (req, res) => {
         await transporter.sendMail(mailOptions);
 
 
-        res.json({message: 'Password reset instructions sent to email'});
+        res.json({message: 'Verify mail'});
     } catch (error) {
         console.log('Error in forgot password:', error);
         res.status(500).json({error: 'Failed to send password reset instructions'});
@@ -217,20 +269,8 @@ const verifyForgetPassword = async (req, res) => {
               key: 'Password Reset Token',
               value: `${decodedToken}`
             },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
-            /*notification: {
-                title: 'Password Reset',
-                body: `${decodedToken}`,
-            },*/
 
         };
-
-
-        /*
-              await sendPushNotification(user.fcm,token)
-        */
-
-
-
         getMessaging().send(message).then((response) => {
             console.log('Successfully sent message:', response);
 
@@ -238,25 +278,59 @@ const verifyForgetPassword = async (req, res) => {
             console.log('Error sending message:', error);
 
         });
-
-
-/*
-        console.log(admin.apps);
-*/
-        /*await ..send(message);*/
         res.redirect('/reset-success');
-
-
-/*
-        res.json({message: 'Password reset confirmation successful'});
-*/
-
 
     } catch (error) {
         console.log(error);
         res.status(500).json({error: 'Failed to verify reset password confirmation'});
     }
 }
+    const verifyUserEmail = async (req, res) => {
+    try {
+
+        const { token } = req.query;
+        const decodedToken = Buffer.from(token, 'base64').toString();
+
+        const user = await User.findOne({
+            emailVerificationToken: decodedToken.toString(),
+            emailVerificationExpires: {$gt: Date.now()}
+        });
+
+        if (!user) {
+            return res.status(400).json({error: 'Invalid or token got expired.'})
+        }
+        //get fcm data from user model and send the token to particular user for reset passowrd
+
+
+        console.log(user.fcm)
+
+
+
+        const message = {
+            token: user.fcm,
+            data:{
+                key: 'Verify User Token',
+                value: `${decodedToken}`
+            },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
+
+        };
+        getMessaging().send(message).then((response) => {
+            console.log('Successfully sent message:', response);
+
+        }).catch((error) => {
+            console.log('Error sending message:', error);
+
+        })
+
+        res.redirect('/reset-success');
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: 'Failed to verify reset password confirmation'});
+    }
+}
+
+
 const resetPassword = async (req, res) => {
     try {
         const {token} = req.params;
@@ -340,5 +414,6 @@ module.exports = {
     signInWithGoogle,
     forgotPassword,
     resetPassword,
-    verifyForgetPassword
+    verifyForgetPassword,
+    verifyUserEmail
 };

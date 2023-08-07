@@ -22,7 +22,12 @@ const userSchema = new mongoose.Schema({
         type: Date,
     },
     resetPasswordToken: String, // Add reset password token field
-    resetPasswordExpires: Date, //
+    resetPasswordExpires: Date,
+    emailVerificationToken: String, // Separate field for email verification token
+    emailVerificationExpires: Date, // Separate field for email verification token expiration
+    isEmailVerified: { type: Boolean, default: false },
+
+    //
 });
 
 userSchema.methods.comparePassword = function (enteredPassword) {
