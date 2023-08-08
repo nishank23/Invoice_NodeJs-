@@ -295,6 +295,7 @@ const verifyUserEmail = async (req, res) => {
             emailVerificationExpires: {$gt: Date.now()}
         });
 
+
         if (!user) {
             return res.status(400).json({error: 'Invalid or token got expired.'})
         }
@@ -309,11 +310,14 @@ const verifyUserEmail = async (req, res) => {
             token: user.fcm,
             data: {
                 key: 'Verify User Token',
-                value: JSON.stringify({ user, token: usertoken })
+                value: JSON.stringify({user, token: usertoken})
             },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
 
         };
-        getMessaging().send(message).then((response) => {
+        getMessaging().send(message).then(async (response) => {
+
+            user.isEmailVerified = true;
+            await user.save();
             console.log('Successfully sent message:', response);
 
         }).catch((error) => {

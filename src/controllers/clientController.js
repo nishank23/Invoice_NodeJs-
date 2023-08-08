@@ -7,7 +7,18 @@ const Client = require('../models/ClientModels/Client');
             console.log(userId);
             console.log(req.body);
             const {clientId} = req.params.clientId;
+
+
+
+/*
             const clientPhoto =  req.file.path!=null?req.file.path:null;
+*/
+
+
+            let clientPhoto = null;
+            if (req.file && req.file.path) {
+                clientPhoto = req.file.path;
+            }
 
             const {
                  company, shippingAddress, billingAddress
