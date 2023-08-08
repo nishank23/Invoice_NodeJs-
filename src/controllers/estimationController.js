@@ -143,6 +143,19 @@ exports.getEstimationById = async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve the estimation' });
     }
 };
+exports.getEstimationByUser = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        const estimation = await Estimation.findById({userId:userId});
+        if (!estimation) {
+            return res.status(404).json({ error: 'Estimation not found' });
+        }
+        res.status(200).json({data:estimation});
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve the estimation' });
+    }
+};
 
 // Update a single estimation by ID
 exports.updateEstimation = async (req, res) => {
