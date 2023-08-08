@@ -147,12 +147,15 @@ exports.getEstimationByUser = async (req, res) => {
     try {
         const userId = req.userId;
 
-        const estimation = await Estimation.findById({userId:userId});
+        const estimation = await Estimation.find({userId:userId}).populate('client');
         if (!estimation) {
             return res.status(404).json({ error: 'Estimation not found' });
         }
+
+
         res.status(200).json({data:estimation});
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Failed to retrieve the estimation' });
     }
 };
