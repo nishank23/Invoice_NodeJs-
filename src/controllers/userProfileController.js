@@ -20,9 +20,36 @@ const createOrUpdateUserProfile = async (req, res) => {
 
         let userProfile = await UserProfile.findOne({ userId });
 
-        const pcpmpany = JSON.parse(company);
-        const paddress = JSON.parse(address);
-        const pbankinfo = JSON.parse(bankInfo);
+        let pcpmpany, paddress, pbankinfo;
+
+        try {
+            pcpmpany = JSON.parse(company);
+        } catch (e) {
+            console.log(e);
+
+            // Handle the error or set default values if necessary
+        }
+
+        try {
+            paddress = JSON.parse(address);
+        } catch (e) {
+            console.log(e);
+
+            // Handle the error or set default values if necessary
+        }
+
+        try {
+            pbankinfo = JSON.parse(bankInfo);
+        } catch (e) {
+            console.log(e);
+            // Handle the error or set default values if necessary
+        }
+
+
+
+
+
+
 
 
         if (userProfile) {
