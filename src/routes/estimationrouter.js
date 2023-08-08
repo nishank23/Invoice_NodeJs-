@@ -12,7 +12,9 @@ const uploadSign = generateStorage('Estimationsign');
 // Create or Update Client
 router.post('/create-est/',authenticateToken,uploadSign.single('file'), estimateController.createEstimation);
 router.post('/est/:id', authenticateToken, estimateController.updateEstimation);
-router.get('/est', authenticateToken, estimateController.getEstimationByUser);
+router.get('/allest', authenticateToken, estimateController.getEstimationByUser);
+
+
 router.get('/curr-est', authenticateToken, estimateController.getLatestEstimationNo);
 router.get('/get-est/:id', estimateController.getAllEstimateData);
 
