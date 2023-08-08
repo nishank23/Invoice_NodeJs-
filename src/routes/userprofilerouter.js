@@ -9,7 +9,7 @@ const userController  = require('../controllers/userProfileController');
 
 const {authenticateToken} = require('../helpers/jwt')
 
-router.post('/user-profile', upload.single('file'),authenticateToken,userController.createOrUpdateUserProfile)
+router.post('/user-profile',authenticateToken, upload.single('file'),userController.createOrUpdateUserProfile)
     .get(userController.getUserProfile)
     .delete(userController.deleteUserProfile);
 

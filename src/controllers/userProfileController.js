@@ -18,29 +18,34 @@ const createOrUpdateUserProfile = async (req, res) => {
 
         let userProfile = await UserProfile.findOne({ userId });
 
+        const pcpmpany = JSON.parse(company);
+        const paddress = JSON.parse(address);
+        const pbankinfo = JSON.parse(bankInfo);
+
+
         if (userProfile) {
             userProfile.userPhoto = userPhoto;
             // Update existing user profile
             userProfile.company = {
-                name: company.name,
-                owner: company.owner,
-                mobileNumber: company.mobileNumber,
-                alternativeMobileNumber: company.alternativeMobileNumber || '',
-                gstNumber: company.gstNumber,
-                email: company.email,
-                website: company.website || '',
+                name: pcpmpany.name,
+                owner: pcpmpany.owner,
+                mobileNumber: pcpmpany.mobileNumber,
+                alternativeMobileNumber: pcpmpany.alternativeMobileNumber || '',
+                gstNumber: pcpmpany.gstNumber,
+                email: pcpmpany.email,
+                website: pcpmpany.website || '',
             };
             userProfile.address = {
-                addressLine: address.addressLine,
-                city: address.city,
-                state: address.state,
-                country: address.country,
-                postalCode: address.postalCode,
+                addressLine: paddress.addressLine,
+                city: paddress.city,
+                state: paddress.state,
+                country: paddress.country,
+                postalCode: paddress.postalCode,
             };
             userProfile.bank = {
-                bankName: bankInfo.bankName,
-                accountNumber: bankInfo.accountNumber,
-                ifscCode: bankInfo.ifscCode,
+                bankName: pbankinfo.bankName,
+                accountNumber: pbankinfo.accountNumber,
+                ifscCode: pbankinfo.ifscCode,
             };
 
             await userProfile.save();
@@ -51,25 +56,25 @@ const createOrUpdateUserProfile = async (req, res) => {
                 userId,
                 userPhoto,
                 company: {
-                    name: company.name,
-                    owner: company.owner,
-                    mobileNumber: company.mobileNumber,
-                    alternativeMobileNumber: company.alternativeMobileNumber || '',
-                    gstNumber: company.gstNumber,
-                    email: company.email,
-                    website: company.website || '',
+                    name: pcpmpany.name,
+                    owner: pcpmpany.owner,
+                    mobileNumber: pcpmpany.mobileNumber,
+                    alternativeMobileNumber: pcpmpany.alternativeMobileNumber || '',
+                    gstNumber: pcpmpany.gstNumber,
+                    email: pcpmpany.email,
+                    website: pcpmpany.website || '',
                 },
                 address: {
-                    addressLine: address.addressLine,
-                    city: address.city,
-                    state: address.state,
-                    country: address.country,
-                    postalCode: address.postalCode,
+                    addressLine: paddress.addressLine,
+                    city: paddress.city,
+                    state: paddress.state,
+                    country: paddress.country,
+                    postalCode: paddress.postalCode,
                 },
                 bank: {
-                    bankName: bankInfo.bankName,
-                    accountNumber: bankInfo.accountNumber,
-                    ifscCode: bankInfo.ifscCode,
+                    bankName: pbankinfo.bankName,
+                    accountNumber: pbankinfo.accountNumber,
+                    ifscCode: pbankinfo.ifscCode,
                 },
             });
 
