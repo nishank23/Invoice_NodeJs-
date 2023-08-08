@@ -32,7 +32,7 @@ exports.createEstimation = async (req, res) => {
             // No file was uploaded
             return res.status(400).json({success: false, message: 'No file was uploaded.'});
         }
-        const signImage = req.file.path;
+        const signImage = req.file.path!=null?req.file.path:null;
 
         console.log(signImage);
 

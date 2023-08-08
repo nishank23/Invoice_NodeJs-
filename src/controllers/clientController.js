@@ -1,82 +1,92 @@
 const Client = require('../models/ClientModels/Client');
 
 // Create or Update Client
-const createOrUpdateClient = async (req, res) => {
-    try {
-        const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
-        console.log(userId);
-        console.log(req.body);
-        const {clientId} = req.params.clientId;
-        const clientPhoto =  req.file.path;
+    const createOrUpdateClient = async (req, res) => {
+        try {
+            const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
+            console.log(userId);
+            console.log(req.body);
+            const {clientId} = req.params.clientId;
+            const clientPhoto =  req.file.path!=null?req.file.path:null;
 
-        const {
-             company, shippingAddress, billingAddress
-        } = req.body;
+            const {
+                 company, shippingAddress, billingAddress
+            } = req.body;
 
-        let client = await Client.findById(clientId);
 
-        if (client) {
-            client.clientPhoto = clientPhoto;
-            client.userId = userId;
-            client.company = {
-                name: company.name,
-                personName: company.personName,
-                mobileNumber: company.mobileNumber,
-                alternativeMobileNumber: company.alternativeMobileNumber || '',
-                gstNumber: company.gstNumber,
-                email: company.email,
-                website: company.website || '',
-            };
-            client.shippingAddress = {
-                addressLine: shippingAddress.addressLine,
-                city: shippingAddress.city,
-                state: shippingAddress.state,
-                country: shippingAddress.country,
-                postalCode: shippingAddress.postalCode,
-            };
-            client.billingAddress = {
-                addressLine: billingAddress.addressLine,
-                city: billingAddress.city,
-                state: billingAddress.state,
-                country: billingAddress.country,
-                postalCode: billingAddress.postalCode,
-            };
 
-            await client.save();
-            res.status(200).json({message: 'Client updated successfully.'});
-        } else {
-            client = new Client({
-                userId, clientPhoto, company: {
-                    name: company.name,
-                    personName: company.personName,
-                    mobileNumber: company.mobileNumber,
-                    alternativeMobileNumber: company.alternativeMobileNumber || '',
-                    gstNumber: company.gstNumber,
-                    email: company.email,
-                    website: company.website || '',
-                }, shippingAddress: {
-                    addressLine: shippingAddress.addressLine,
-                    city: shippingAddress.city,
-                    state: shippingAddress.state,
-                    country: shippingAddress.country,
-                    postalCode: shippingAddress.postalCode,
-                }, billingAddress: {
-                    addressLine: billingAddress.addressLine,
-                    city: billingAddress.city,
-                    state: billingAddress.state,
-                    country: billingAddress.country,
-                    postalCode: billingAddress.postalCode,
-                },
-            });
+            const parsedCompany = JSON.parse(company);
+            const parsedsAddress = JSON.parse(shippingAddress);
+            const parsedbAddress = JSON.parse(billingAddress);
 
-            await client.save();
-            res.status(200).json({message: 'Client created successfully.'});
+
+            let client = await Client.findById(clientId);
+
+            if (client) {
+                client.clientPhoto = clientPhoto;
+                client.userId = userId;
+                client.company = {
+                    name: parsedCompany.name,
+                    personName: parsedCompany.personName,
+                    mobileNumber: parsedCompany.mobileNumber,
+                    alternativeMobileNumber: parsedCompany.alternativeMobileNumber || '',
+                    gstNumber: parsedCompany.gstNumber,
+                    email: parsedCompany.email,
+                    website: parsedCompany.website || '',
+                };
+                client.shippingAddress = {
+                    addressLine: parsedsAddress.addressLine,
+                    city: parsedsAddress.city,
+                    state: parsedsAddress.state,
+                    country: parsedsAddress.country,
+                    postalCode: parsedsAddress.postalCode,
+                };
+                client.billingAddress = {
+                    addressLine: parsedbAddress.addressLine,
+                    city: parsedbAddress.city,
+                    state: parsedbAddress.state,
+                    country: parsedbAddress.country,
+                    postalCode: parsedbAddress.postalCode,
+                };
+
+                await client.save();
+                res.status(200).json({message: 'Client updated successfully.'});
+            } else {
+                client = new Client({
+                    userId, clientPhoto,
+
+
+                    company: {
+                        name: parsedCompany.name,
+                        personName: parsedCompany.personName,
+                        mobileNumber: parsedCompany.mobileNumber,
+                        alternativeMobileNumber: parsedCompany.alternativeMobileNumber || '',
+                        gstNumber: parsedCompany.gstNumber,
+                        email: parsedCompany.email,
+                        website: parsedCompany.website || '',
+                    }, shippingAddress: {
+                        addressLine: parsedsAddress.addressLine,
+                        city: parsedsAddress.city,
+                        state: parsedsAddress.state,
+                        country: parsedsAddress.country,
+                        postalCode: parsedsAddress.postalCode,
+                    }, billingAddress: {
+                        addressLine: parsedbAddress.addressLine,
+                        city: parsedbAddress.city,
+                        state: parsedbAddress.state,
+                        country: parsedbAddress.country,
+                        postalCode: parsedbAddress.postalCode,
+                    },
+                });
+
+                await client.save();
+                res.status(200).json({message: 'Client created successfully.'});
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({message: 'Failed to create/update client.', error});
         }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message: 'Failed to create/update client.', error});
-    }
-};
+    };
 
 
 const uploadClientProfile = async (req, res) => {
