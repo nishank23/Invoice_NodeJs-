@@ -26,6 +26,7 @@ const createOrUpdateUserProfile = async (req, res) => {
             pcpmpany = JSON.parse(company);
         } catch (e) {
             console.log(e);
+            console.log(pcpmpany);
 
             // Handle the error or set default values if necessary
         }
