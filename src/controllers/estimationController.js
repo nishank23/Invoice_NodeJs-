@@ -84,7 +84,7 @@ exports.createEstimation = async (req, res) => {
     }
 };
 
-exports.getAllEstimateData = async (req,res) =>{
+exports.getEstimationPreview = async (req,res) =>{
     const estimationId = req.params.id;
 
     try {
@@ -111,6 +111,47 @@ exports.getAllEstimateData = async (req,res) =>{
 
 
         res.render('myinvoice', {estimation: estimation,userprofile: userprofile });
+
+
+
+    }catch (e) {
+        console.log(e);
+        res.status(500).json({ error: 'Failed to get the estimation' });
+
+    }
+}
+
+exports.getAllEstimateData = async (req,res) =>{
+    const estimationId = req.params.id;
+
+    try {
+        const estimation = await Estimation.findById(estimationId)
+            .populate({
+                path: 'products.product',
+                select: 'name price currencySymbol',
+            })
+            .populate('client');
+
+
+        const userprofile = await UserProfile.findOne({userId:estimation.userId})
+
+        if (!estimation) {
+            return res.status(404).json({ message: 'Estimation not found' });
+        }
+
+        console.log(estimation.sign);
+
+
+        /*
+                res.render('invoice', { estimation });
+        */
+
+
+        res.json({estimation:estimation,userprofile:userprofile});
+
+/*
+        res.render('myinvoice', {estimation: estimation,userprofile: userprofile });
+*/
 
 
 
