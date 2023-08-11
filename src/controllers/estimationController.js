@@ -51,9 +51,11 @@ exports.createEstimation = async (req, res) => {
         let estimationNo = "EST1"; // Default estimation number for a new user
 
         if (latestEstimation) {
-            const latestEstimationNo = latestEstimation.estimationNo;
+       /*     const latestEstimationNo = latestEstimation.estimationNo;
             const numberPart = parseInt(latestEstimationNo.substring(3)); // Extract the number part
-            estimationNo = `EST${numberPart + 1}`;
+            estimationNo = `EST${numberPart + 1}`;*/
+
+            estimationNo ='EST1';
         }
 
         console.log(parsedProducts);
