@@ -27,6 +27,19 @@ exports.getLatestEstimationNo = async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve the latest estimation number' });
     }
 };
+const getNextEstimationNumber = async (userId) => {
+    const latestEstimation = await Estimation.findOne({ userId }).sort({ _id: -1 }).limit(1);
+
+    if (!latestEstimation) {
+        return "EST1";
+    }
+
+    const latestNumber = parseInt(latestEstimation.estimationNo.substring(3));
+    const newNumber = latestNumber + 1;
+
+    return `EST${newNumber}`;
+};
+
 exports.createEstimation = async (req, res) => {
     try {
 
@@ -45,36 +58,18 @@ exports.createEstimation = async (req, res) => {
         const parsedProducts = JSON.parse(products);
         const parsedTaxes = JSON.parse(taxes);
 
-        // Get the latest estimation number for the current user
-/*
-        const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: -1 });
-*/
 
-        const size = await Estimation.find({userId:userId});
-
-        var estimatNo =size.length+ 1;
-
-
-        // Default estimation number for a new user
-
-      /*  if (latestEstimation) {
-       /!*     const latestEstimationNo = latestEstimation.estimationNo;
-            const numberPart = parseInt(latestEstimationNo.substring(3)); // Extract the number part
-            estimationNo = `EST${numberPart + 1}`;*!/
-
-            estimationNo ='1';
-        }*/
 
         console.log(parsedProducts);
         console.log(parsedTaxes);
 
-        var myestt="EST"+estimatNo.toString();
+        const nextEstimationNo = await getNextEstimationNumber(userId);
 
 
         const estimation = new Estimation({
             client,
            products: parsedProducts,
-            estimationNo: myestt,
+            estimationNo: nextEstimationNo,
             estimationDate,
             currency,
             sign:signImage,
