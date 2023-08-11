@@ -48,24 +48,32 @@ exports.createEstimation = async (req, res) => {
         // Get the latest estimation number for the current user
         const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: -1 });
 
-        let estimationNo = "EST1"; // Default estimation number for a new user
+        var estimatNo = 1;
 
-        if (latestEstimation) {
-       /*     const latestEstimationNo = latestEstimation.estimationNo;
+
+        // Default estimation number for a new user
+
+
+        estimatNo++;
+
+      /*  if (latestEstimation) {
+       /!*     const latestEstimationNo = latestEstimation.estimationNo;
             const numberPart = parseInt(latestEstimationNo.substring(3)); // Extract the number part
-            estimationNo = `EST${numberPart + 1}`;*/
+            estimationNo = `EST${numberPart + 1}`;*!/
 
-            estimationNo ='EST1';
-        }
+            estimationNo ='1';
+        }*/
 
         console.log(parsedProducts);
         console.log(parsedTaxes);
+
+        var myestt= estimatNo.toString();
 
 
         const estimation = new Estimation({
             client,
            products: parsedProducts,
-            estimationNo,
+            myestt,
             estimationDate,
             currency,
             sign:signImage,
