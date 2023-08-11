@@ -153,7 +153,7 @@ exports.getEstimationPreview = async (req,res) =>{
         fs.writeFileSync(htmlFilePath, renderedHtml);
 
         // Launch Puppeteer and generate the PDF
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({headless: true, args:['--no-sandbox']});
         const page = await browser.newPage();
 
         // Load the temporary HTML file
