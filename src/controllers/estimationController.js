@@ -13,7 +13,7 @@ exports.getLatestEstimationNo = async (req, res) => {
 
         if (latestEstimation) {
             console.log("inside");
-            res.status(200).json({data:{ estimationNo: latestEstimation.estimationNo} });
+            res.status(200).json({data:{ estimationNo: "EST1"} });
         } else {
             console.log("no data");
 
