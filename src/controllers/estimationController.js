@@ -16,7 +16,7 @@ exports.getLatestEstimationNo = async (req, res) => {
             const latestEstimationNo = latestEstimation.estimationNo;
             const numberPart = parseInt(latestEstimationNo.substring(3)); // Extract the number part
             estimationNo = `EST${numberPart + 1}`;
-            console.log("inside");
+            console.log("inside "+estimationNo);
             res.status(200).json({data:{ estimationNo: estimationNo} });
         } else {
             console.log("no data");
