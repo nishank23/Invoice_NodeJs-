@@ -56,7 +56,6 @@ const estimationSchema = new mongoose.Schema({
     ],
     estimationNo: {
         type: String,
-        required: true,
         unique: true
     },
     totalAmount: {
