@@ -74,7 +74,7 @@ exports.createEstimation = async (req, res) => {
         const estimation = new Estimation({
             client,
            products: parsedProducts,
-            myestt,
+            estimationNo: myestt,
             estimationDate,
             currency,
             sign:signImage,
