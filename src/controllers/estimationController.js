@@ -50,9 +50,9 @@ exports.createEstimation = async (req, res) => {
         const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: -1 });
 */
 
-        const size = await Estimation.findOne({userId:userId});
+        const size = await Estimation.find({userId:userId});
 
-        var estimatNo =size+ 1;
+        var estimatNo =size.length+ 1;
 
 
         // Default estimation number for a new user
