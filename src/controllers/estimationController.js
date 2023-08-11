@@ -46,15 +46,16 @@ exports.createEstimation = async (req, res) => {
         const parsedTaxes = JSON.parse(taxes);
 
         // Get the latest estimation number for the current user
+/*
         const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: -1 });
+*/
 
-        var estimatNo = 1;
+        const size = await Estimation.findOne({userId:userId});
+
+        var estimatNo =size+ 1;
 
 
         // Default estimation number for a new user
-
-
-        estimatNo++;
 
       /*  if (latestEstimation) {
        /!*     const latestEstimationNo = latestEstimation.estimationNo;
