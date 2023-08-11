@@ -3,6 +3,10 @@ const country = require('../models/addressModels/country');
 const state = require('../models/addressModels/state');
 const city = require('../models/addressModels/city');
 const UserProfile = require('../models/UserModels/userprofile');
+const puppeteer = require('puppeteer');
+const ejs = require('ejs'); // Import the ejs library
+const path = require('path');
+const fs = require('fs');
 
 exports.getLatestEstimationNo = async (req, res) => {
     try {
@@ -105,27 +109,25 @@ exports.getEstimationPreview = async (req,res) =>{
             .populate('client');
 
 
-
         if (!estimation) {
-            return res.status(404).json({ message: 'Estimation not found' });
+            return res.status(404).json({message: 'Estimation not found'});
         }
 
         console.log(estimation.sign);
 
-        const clientbilledcity = await city.findOne({ id: Number(estimation.client.billingAddress.city) });
-        const clientbilledstate = await city.findOne({ id: Number(estimation.client.billingAddress.state) });
-        const clientbilledcountry = await city.findOne({ id: parseInt(estimation.client.billingAddress.country) });
+        const clientbilledcity = await city.findOne({id: Number(estimation.client.billingAddress.city)});
+        const clientbilledstate = await city.findOne({id: Number(estimation.client.billingAddress.state)});
+        const clientbilledcountry = await city.findOne({id: parseInt(estimation.client.billingAddress.country)});
 
         estimation.client.billingAddress.city = clientbilledcity.name;
         estimation.client.billingAddress.state = clientbilledstate.name;
         estimation.client.billingAddress.country = clientbilledcountry.name;
 
 
-
-        const userprofile = await UserProfile.findOne({userId:estimation.userId})
-        const usercity = await city.findOne({id:parseInt(userprofile.address.city)});
-        const userstate = await city.findOne({id:parseInt(userprofile.address.state)});
-        const usercountry = await city.findOne({id:parseInt(userprofile.address.country)});
+        const userprofile = await UserProfile.findOne({userId: estimation.userId})
+        const usercity = await city.findOne({id: parseInt(userprofile.address.city)});
+        const userstate = await city.findOne({id: parseInt(userprofile.address.state)});
+        const usercountry = await city.findOne({id: parseInt(userprofile.address.country)});
 
 
         userprofile.address.city = usercity.name;
@@ -133,25 +135,54 @@ exports.getEstimationPreview = async (req,res) =>{
         userprofile.address.country = usercountry.name;
 
 
-
-
-
+        console.log(path.join(__dirname));
+        console.log(path.join(__dirname, "./../views/myinvoice.ejs"));
 
         /*
                 res.render('invoice', { estimation });
         */
 
+        const renderedHtml = await ejs.renderFile(path.join(__dirname, '../../views/myinvoice.ejs'), {
+            estimation: estimation,
+            userprofile: userprofile,
+            baseUrl: "165.22.218.255"
+        });
 
-        res.render('myinvoice', {estimation: estimation,userprofile: userprofile });
+        // Create a temporary HTML file with the rendered HTML content
+        const htmlFilePath = path.join(__dirname, 'temp_invoice.html');
+        fs.writeFileSync(htmlFilePath, renderedHtml);
 
+        // Launch Puppeteer and generate the PDF
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
 
+        // Load the temporary HTML file
+        await page.goto(`file://${htmlFilePath}`, { waitUntil: 'networkidle0' });
+
+        // Generate the PDF as a buffer
+        const pdfBuffer = await page.pdf({
+            format: 'A4', // Use 'Letter' for US Letter paper size
+            printBackground: true
+        });
+
+        await browser.close();
+
+        // Clean up the temporary HTML file
+        fs.unlinkSync(htmlFilePath);
+
+        // Set the response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="rendered-invoice.pdf"');
+
+        // Send the PDF buffer as the response
+        res.send(pdfBuffer);
 
     }catch (e) {
-        console.log(e);
-        res.status(500).json({ error: 'Failed to get the estimation' });
+            console.log(e);
+            res.status(500).json({error: 'Failed to get the estimation', e: e});
 
-    }
-}
+        }
+    };
 
 exports.getAllEstimateData = async (req,res) =>{
     const estimationId = req.params.id;
