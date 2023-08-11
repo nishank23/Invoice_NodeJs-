@@ -47,6 +47,7 @@ exports.createEstimation = async (req, res) => {
 
         console.log(req.body);
         const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
+        const nextEstimationNo = await getNextEstimationNumber(userId);
 
         const signImage = req.file.path!=null?req.file.path:null;
 
@@ -63,7 +64,6 @@ exports.createEstimation = async (req, res) => {
         console.log(parsedProducts);
         console.log(parsedTaxes);
 
-        const nextEstimationNo = await getNextEstimationNumber(userId);
 
 
         const estimation = new Estimation({
