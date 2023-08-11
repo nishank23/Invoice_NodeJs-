@@ -12,8 +12,12 @@ exports.getLatestEstimationNo = async (req, res) => {
         const latestEstimation = await Estimation.findOne({userId: userId }).sort({ estimationNo: -1 });
 
         if (latestEstimation) {
+
+            const latestEstimationNo = latestEstimation.estimationNo;
+            const numberPart = parseInt(latestEstimationNo.substring(3)); // Extract the number part
+            estimationNo = `EST${numberPart + 1}`;
             console.log("inside");
-            res.status(200).json({data:{ estimationNo: latestEstimation.estimationNo} });
+            res.status(200).json({data:{ estimationNo: estimationNo} });
         } else {
             console.log("no data");
 
@@ -42,7 +46,7 @@ exports.createEstimation = async (req, res) => {
         const parsedTaxes = JSON.parse(taxes);
 
         // Get the latest estimation number for the current user
-        const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: 1 });
+        const latestEstimation = await Estimation.findOne({ userId }).sort({ estimationNo: -1 });
 
         let estimationNo = "EST1"; // Default estimation number for a new user
 
@@ -59,7 +63,7 @@ exports.createEstimation = async (req, res) => {
         const estimation = new Estimation({
             client,
            products: parsedProducts,
-            estimationNo,
+           estimateNo: estimationNo,
             estimationDate,
             currency,
             sign:signImage,
