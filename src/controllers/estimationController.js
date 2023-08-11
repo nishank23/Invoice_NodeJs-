@@ -68,7 +68,7 @@ exports.createEstimation = async (req, res) => {
         console.log(parsedProducts);
         console.log(parsedTaxes);
 
-        var myestt="EST1";
+        var myestt="EST"+estimatNo.toString();
 
 
         const estimation = new Estimation({
