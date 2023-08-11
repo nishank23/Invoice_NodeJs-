@@ -1,4 +1,7 @@
 const Estimation = require('../models/EstimationModel/estimation');
+const country = require('../models/addressModels/country');
+const state = require('../models/addressModels/state');
+const city = require('../models/addressModels/city');
 const UserProfile = require('../models/UserModels/userprofile');
 
 exports.getLatestEstimationNo = async (req, res) => {
@@ -28,10 +31,6 @@ exports.createEstimation = async (req, res) => {
         console.log(req.body);
         const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
 
-        if (!req.file) {
-            // No file was uploaded
-            return res.status(400).json({success: false, message: 'No file was uploaded.'});
-        }
         const signImage = req.file.path!=null?req.file.path:null;
 
         console.log(signImage);
@@ -91,7 +90,7 @@ exports.getEstimationPreview = async (req,res) =>{
         const estimation = await Estimation.findById(estimationId)
             .populate({
                 path: 'products.product',
-                select: 'name price currencySymbol',
+                select: 'name price currencySymbol images',
             })
             .populate('client');
 
@@ -128,12 +127,32 @@ exports.getAllEstimateData = async (req,res) =>{
         const estimation = await Estimation.findById(estimationId)
             .populate({
                 path: 'products.product',
-                select: 'name price currencySymbol',
+                select: 'name price currencySymbol images',
             })
             .populate('client');
 
 
+        const clientbilledcity = await city.findOne({ id: Number(estimation.client.billingAddress.city) });
+        const clientbilledstate = await city.findOne({ id: Number(estimation.client.billingAddress.state) });
+        const clientbilledcountry = await city.findOne({ id: parseInt(estimation.client.billingAddress.country) });
+
+        estimation.client.billingAddress.city = clientbilledcity.name;
+        estimation.client.billingAddress.state = clientbilledstate.name;
+        estimation.client.billingAddress.country = clientbilledcountry.name;
+
+
+
         const userprofile = await UserProfile.findOne({userId:estimation.userId})
+        const usercity = await city.findOne({id:parseInt(userprofile.address.city)});
+        const userstate = await city.findOne({id:parseInt(userprofile.address.state)});
+        const usercountry = await city.findOne({id:parseInt(userprofile.address.country)});
+
+
+        userprofile.address.city = usercity.name;
+        userprofile.address.state = userstate.name;
+        userprofile.address.country = usercountry.name;
+
+
 
         if (!estimation) {
             return res.status(404).json({ message: 'Estimation not found' });
