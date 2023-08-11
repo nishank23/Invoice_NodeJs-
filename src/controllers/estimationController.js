@@ -11,7 +11,7 @@ exports.getLatestEstimationNo = async (req, res) => {
 
 /*
         const latestEstimation = await Estimation.findOne({userId: userId }).sort({ estimationNo: -1 });
-*/
+
 
         if (latestEstimation) {
             console.log("inside");
@@ -19,8 +19,10 @@ exports.getLatestEstimationNo = async (req, res) => {
         } else {
             console.log("no data");
 
-            res.status(200).json({data:{ estimationNo: "EST1" }});
         }
+        */
+
+        res.status(200).json({data:{ estimationNo: "EST1" }});
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve the latest estimation number' });
     }
