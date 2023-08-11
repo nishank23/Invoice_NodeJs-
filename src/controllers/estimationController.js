@@ -9,7 +9,9 @@ exports.getLatestEstimationNo = async (req, res) => {
         const userId = req.userId;
 
 
+/*
         const latestEstimation = await Estimation.findOne({userId: userId }).sort({ estimationNo: -1 });
+*/
 
         if (latestEstimation) {
             console.log("inside");
