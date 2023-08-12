@@ -28,7 +28,7 @@ const signUpWithEmail = async (req, res) => {
                 await existingUser.save();
 
                 const encodedToken = Buffer.from(verificationToken).toString('base64');
-                const verificationLink = `https://invoicetest-m7na.onrender.com/verify?token=${encodedToken}`;
+                const verificationLink = `http://165.22.218.255:3000/verify?token=${encodedToken}`;
 
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
