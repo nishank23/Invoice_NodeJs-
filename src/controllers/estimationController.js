@@ -12,7 +12,7 @@ exports.getLatestEstimationNo = async (req, res) => {
     try {
         const userId = req.userId;
 
-
+        const nextEstimationNo= await getNextEstimationNumber(userId);
 /*
         const latestEstimation = await Estimation.findOne({userId: userId }).sort({ estimationNo: -1 });
 
@@ -26,7 +26,7 @@ exports.getLatestEstimationNo = async (req, res) => {
         }
         */
 
-        res.status(200).json({data:{ estimationNo: "EST1" }});
+        res.status(200).json({data:{ estimationNo: nextEstimationNo }});
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve the latest estimation number' });
     }
@@ -145,7 +145,7 @@ exports.getEstimationPreview = async (req,res) =>{
         const renderedHtml = await ejs.renderFile(path.join(__dirname, '../../views/myinvoice.ejs'), {
             estimation: estimation,
             userprofile: userprofile,
-            baseUrl: "165.22.218.255"
+            baseUrl: "http://165.22.218.255:3000/"
         });
 
         // Create a temporary HTML file with the rendered HTML content
