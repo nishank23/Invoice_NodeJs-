@@ -68,7 +68,7 @@ const signUpWithEmail = async (req, res) => {
         await newUser.save();
 
         const encodedToken = Buffer.from(verificationToken).toString('base64');
-        const verificationLink = `https://invoicetest-m7na.onrender.com/api/v1/verify?token=${encodedToken}`;
+        const verificationLink = `http://165.22.218.255:3000/verify?token=${encodedToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -213,7 +213,7 @@ const forgotPassword = async (req, res) => {
         const encodedToken = Buffer.from(token).toString('base64');
 
 
-        const resetPasswordLink = `https://invoicetest-m7na.onrender.com/verifyforget?token=${encodedToken}`;
+        const resetPasswordLink = `http://165.22.218.255:3000/verifyforget?token=${encodedToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
