@@ -172,10 +172,11 @@ exports.getEstimationPreview = async (req,res) =>{
 
         // Set the response headers
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="rendered-invoice.pdf"');
+        res.setHeader('Content-Disposition', 'attachment; filename="rendered-invoice.pdf"');
+        res.send(pdfBuffer);
+
 
         // Send the PDF buffer as the response
-        res.send(pdfBuffer);
 
     }catch (e) {
             console.log(e);
