@@ -49,8 +49,9 @@ exports.createEstimation = async (req, res) => {
         console.log("tried");
 
         console.log(req.body);
-        const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
+        const userId = req.userId;
         const nextEstimationNo = await getNextEstimationNumber(userId);
+        console.log("myestimationNumber"+nextEstimationNo);// Assuming you have the authenticated user's ID available in req.user.id
 
         let signImage = null;
         if (req.file && req.file.path) {
