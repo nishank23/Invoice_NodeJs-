@@ -58,10 +58,12 @@ const estimationSchema = new mongoose.Schema({
 
         type: String,
         required: true,
+        unique:true
     },
     totalAmount: {
         type: Number,
-        required: true
+        required: true,
+
     },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
