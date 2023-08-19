@@ -2,6 +2,7 @@ const Estimation = require('../models/EstimationModel/estimation');
 const country = require('../models/addressModels/country');
 const state = require('../models/addressModels/state');
 const city = require('../models/addressModels/city');
+const estimationCounter = require('../models/estimationCounter/estimationCounter');
 const UserProfile = require('../models/UserModels/userprofile');
 const puppeteer = require('puppeteer');
 const ejs = require('ejs'); // Import the ejs library
@@ -31,17 +32,15 @@ exports.getLatestEstimationNo = async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve the latest estimation number' });
     }
 };
+
 const getNextEstimationNumber = async (userId) => {
-    const latestEstimation = await Estimation.findOne({ userId }).sort({ _id: -1 }).limit(1);
+    let estimationCount = await estimationCounter.findOneAndUpdate(
+        { userId },
+        { $inc: { counter: 1 } },
+        { upsert: true, new: true }
+    );
 
-    if (!latestEstimation) {
-        return "EST1";
-    }
-
-    const latestNumber = parseInt(latestEstimation.estimationNo.substring(3));
-    const newNumber = latestNumber + 1;
-
-    return `EST${newNumber}`;
+    return `EST${estimationCount.counter}`;
 };
 
 exports.createEstimation = async (req, res) => {
