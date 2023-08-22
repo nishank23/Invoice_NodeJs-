@@ -46,7 +46,7 @@ const getNextEstimationNumber = async (userId) => {
         { userId },
     );
 
-    return `EST${estimationCount.counter}`;
+    return `EST${estimationCount.counter+1}`;
 };
 
 exports.createEstimation = async (req, res) => {
