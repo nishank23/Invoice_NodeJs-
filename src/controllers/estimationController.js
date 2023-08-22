@@ -13,7 +13,7 @@ exports.getLatestEstimationNo = async (req, res) => {
     try {
         const userId = req.userId;
 
-        const nextEstimationNo= await getNextEstimationNumber(userId);
+        const nextEstimationNo= await getCurrentEstimationNumber(userId);
 /*
         const latestEstimation = await Estimation.findOne({userId: userId }).sort({ estimationNo: -1 });
 
@@ -38,6 +38,12 @@ const getNextEstimationNumber = async (userId) => {
         { userId },
         { $inc: { counter: 1 } },
         { upsert: true, new: true }
+    );
+
+    return `EST${estimationCount.counter}`;
+};const getCurrentEstimationNumber = async (userId) => {
+    let estimationCount = await estimationCounter.findOne(
+        { userId },
     );
 
     return `EST${estimationCount.counter}`;
