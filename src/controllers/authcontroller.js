@@ -144,15 +144,7 @@ const signUpWithGoogle = async (req, res) => {
 
                 isProfileUpdate=true;
             }
-            print(userProfile);
-
-            // Check if the user already signed up with Google
-          /*  if (existingUser.googleId) {
-                return res.status(400).json({error: 'User already signed up with Google'});
-            }*/
-
-            // Associate Google ID and FCM token with the existing email-based account
-
+            console.log(userProfile); // Use console.log to log the userProfile
 
 
             existingUser.googleId = googleId;
@@ -170,7 +162,10 @@ const signUpWithGoogle = async (req, res) => {
 
 
         const token = myjwt.generateToken({userId: existingUser._id}, process.env.JWT_SECRET_KEY);
-        res.json({user: existingUser, token,userProfileUpdated:isProfileUpdate}); // Send user and token in the response
+        res.json({user: existingUser, token,userProfileUpdated:isProfileUpdate});
+
+        console.log({user: existingUser, token,userProfileUpdated:isProfileUpdate});
+        // Send user and token in the response
     } catch (error) {
         console.log('Error signing up with Google:', error);
         res.status(500).json({error: 'Failed to sign up with Google'});
