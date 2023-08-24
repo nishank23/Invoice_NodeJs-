@@ -133,27 +133,36 @@ const signUpWithGoogle = async (req, res) => {
         const {email, googleId, fcm} = req.body;
 
         // Check if user already exists
-        const existingUser = await User.findOne({email});
+        let existingUser = await User.findOne({email});
+
         if (existingUser) {
-            return res.status(400).json({error: 'User already exists'});
+            // Check if the user already signed up with Google
+            if (existingUser.googleId) {
+                return res.status(400).json({error: 'User already signed up with Google'});
+            }
+
+            // Associate Google ID and FCM token with the existing email-based account
+            existingUser.googleId = googleId;
+            existingUser.fcm = fcm;
+            await existingUser.save();
+        } else {
+            // Create new user if the user doesn't exist
+            existingUser = new User({
+                email,
+                googleId,
+                fcm
+            });
+            await existingUser.save();
         }
 
-
-        // Create new user
-        const newUser = new User({
-            email,
-            googleId,
-            fcm
-        });
-        await newUser.save();
-
-        const token = myjwt.generateToken({userId: newUser._id}, process.env.JWT_SECRET_KEY);
-        res.json({user: newUser, token}); // Send user and token in the response
+        const token = myjwt.generateToken({userId: existingUser._id}, process.env.JWT_SECRET_KEY);
+        res.json({user: existingUser, token}); // Send user and token in the response
     } catch (error) {
         console.log('Error signing up with Google:', error);
         res.status(500).json({error: 'Failed to sign up with Google'});
     }
 };
+
 
 // Sign in with Google
 const signInWithGoogle = async (req, res) => {
