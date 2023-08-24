@@ -1,4 +1,5 @@
 const User = require('../models/UserModels/user');
+const UserProfile = require('../models/UserModels/userprofile');
 const genverifypass = require('../helpers/password');
 const myjwt = require('../helpers/jwt');
 const dotenv = require('dotenv');
@@ -135,13 +136,25 @@ const signUpWithGoogle = async (req, res) => {
         // Check if user already exists
         let existingUser = await User.findOne({email});
 
+        let isProfileUpdate= false;
+
         if (existingUser) {
-            // Check if the user already signed up with Google
-            if (existingUser.googleId) {
-                return res.status(400).json({error: 'User already signed up with Google'});
+            let userProfile = await UserProfile.findOne({userId:existingUser._id});
+            if(userProfile!=null){
+
+                isProfileUpdate=true;
             }
+            print(userProfile);
+
+            // Check if the user already signed up with Google
+          /*  if (existingUser.googleId) {
+                return res.status(400).json({error: 'User already signed up with Google'});
+            }*/
 
             // Associate Google ID and FCM token with the existing email-based account
+
+
+
             existingUser.googleId = googleId;
             existingUser.fcm = fcm;
             await existingUser.save();
@@ -155,8 +168,9 @@ const signUpWithGoogle = async (req, res) => {
             await existingUser.save();
         }
 
+
         const token = myjwt.generateToken({userId: existingUser._id}, process.env.JWT_SECRET_KEY);
-        res.json({user: existingUser, token}); // Send user and token in the response
+        res.json({user: existingUser, token,userProfileUpdated:isProfileUpdate}); // Send user and token in the response
     } catch (error) {
         console.log('Error signing up with Google:', error);
         res.status(500).json({error: 'Failed to sign up with Google'});
