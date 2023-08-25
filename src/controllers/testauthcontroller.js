@@ -6,7 +6,13 @@ const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const nodemailer = require('nodemailer');
 const {getMessaging} = require("firebase-admin/messaging");
+const {getAuth} = require("firebase-admin/auth");
+const {json} = require("express");
+const googleProviderId = 'google.com';
+
+
 // Sign up with email
+/*
 const signUpWithEmail = async (req, res) => {
     try {
         const {email, password, fcm} = req.body;
@@ -49,7 +55,7 @@ const signUpWithEmail = async (req, res) => {
                 // Send the email
                 await transporter.sendMail(mailOptions);
 
-                return res.json({message: 'Email verification instructions sent to email',data:existingUser._id});
+                return res.json({message: 'Email verification instructions sent to email'});
             }
         }
 
@@ -89,14 +95,111 @@ const signUpWithEmail = async (req, res) => {
         // Send the email
         await transporter.sendMail(mailOptions);
 
-        return res.json({message: 'Email verification instructions sent to email',data:newUser._id});
+        return res.json({message: 'Email verification instructions sent to email'});
     } catch (error) {
         console.log('Error signing up with email:', error);
         res.status(500).json({error: 'Failed to sign up with email'});
     }
 };
+*/
+const signUpWithEmail = async (req, res) => {
+    try {
+        const {email, password, fcm} = req.body;
+
+        console.log(req.body);
+        let existingUser = null
+        try {
+            existingUser = await getAuth().getUserByEmail(email);
+
+        } catch (e) {
+            const newUser = await getAuth().createUser({
+                email: email,
+                password: password,
+                emailVerified: false,
+                disabled: false,
+            });
+
+            console.log('New user with email created:', newUser);
+
+
+            const token = await getAuth().createCustomToken(newUser.uid);
+            return res.json({data: newUser, token: token});
+
+
+        }// Check if the user already exists with the provided email
+
+        if (!existingUser) {
+            // Create a new user with email and password
+
+        } else {
+            // Check if the user already has a Google provider
+            const hasGoogleProvider = existingUser.providerData.some(provider => provider.providerId === googleProviderId);
+
+            if (hasGoogleProvider) {
+                // Link the Google provider to the existing email-based account
+                await getAuth().updateUser(existingUser.uid, {
+                    providerToLink: {
+                        providerId: 'password',
+                        email: email,
+                        password: password,
+                    },
+                    providerData: [
+                        ...existingUser.providerData,
+
+                    ],
+                });
+                const token = await getAuth().createCustomToken(existingUser.uid);
+
+                console.log('Linked Google provider to email-based account:', existingUser);
+                return res.json({data: existingUser, token: token});
+            } else {
+                // User already registered with email
+                return res.status(400).json({error: 'Email already registered with a different account'});
+            }
+        }
+    } catch (error) {
+        console.log('Error signing up with email:', error);
+        const errorMessage = error.errorInfo.message; // Get the error message
+        return res.status(400).json({error: errorMessage}); // Return the error message in the response
+    }
+};
+
+
+const signInWithEmail = async (req, res) => {
+    try {
+        const {email, password, fcm} = req.body;
+
+        let userRecord;
+
+        try {
+            userRecord = await getAuth().getUserByEmail(email);
+        } catch (error) {
+            // Handle the error if needed
+            return res.status(400).json({error: 'User not found'});
+        }
+
+        // Sign in the user with email and password
+        const signInResult = await getAuth().signInWithEmailAndPassword(email, password);
+
+        // Get the signed-in user's UID
+        const uid = signInResult.user.uid;
+
+        // Generate a custom token for the signed-in user
+        const token = await getAuth().createCustomToken(uid);
+
+        // Update FCM token and any other user data as needed
+        // For example, you can update the user's fcm field here
+
+        return res.json({user: userRecord, token, fcm});
+    } catch (error) {
+        console.log('Error signing in with email:', error);
+        const errorMessage = error.errorInfo.message;
+        return res.status(400).json({error: errorMessage});
+    }
+};
 
 // Sign in with email
+/*
 const signInWithEmail = async (req, res) => {
     try {
         const {email, password, fcm} = req.body;
@@ -127,8 +230,80 @@ const signInWithEmail = async (req, res) => {
         res.status(500).json({error: 'Failed to sign in with email'});
     }
 };
+*/
+
+
+const signUpWithGoogle = async (req, res) => {
+    try {
+        const {email, gtoken, gidtoken, displayName} = req.body;
+
+        console.log(req.body);
+        let existingUser = null
+        try {
+            existingUser = await getAuth().getUserByEmail(email);
+            const hasGoogleProvider = existingUser.providerData.some(provider => provider.uid === gidtoken);
+
+            if (hasGoogleProvider) {
+                return res.status(400).json({error: 'Already registered with a gmail'});
+            } else {
+
+
+                const updateUser = await getAuth().updateUser(existingUser.uid, {
+                    providerToLink:{
+                        providerId: googleProviderId,
+                        displayName: displayName,
+                        uid: gidtoken,
+                        email: email,
+                    },
+                    providerData: [
+                        ...existingUser.providerData,
+
+                    ],
+                });
+
+                const token = await getAuth().createCustomToken(updateUser.uid);
+
+                return res.json({data: updateUser, token: token});
+
+
+            }
+
+
+        } catch (e) {
+            const newUser = await getAuth().createUser({
+                email: email,
+                emailVerified: false,
+                providerToLink: {
+                    providerId: googleProviderId,
+                    displayName: displayName,
+                    uid: gidtoken,
+                    email: email,
+                },
+                disabled: false,
+            });
+
+
+            console.log('New user with email created:', newUser);
+
+
+            const token = await getAuth().createCustomToken(newUser.uid);
+            return res.json({data: newUser, token: token});
+
+
+        }// Check if the user already exists with the provided email
+
+        console.log("Check");
+
+    } catch (error) {
+        console.log('Error signing up with email:', error);
+        const errorMessage = error.errorInfo.message; // Get the error message
+        return res.status(400).json({error: errorMessage}); // Return the error message in the response
+    }
+};
+
 
 // Sign up with Google
+/*
 const signUpWithGoogle = async (req, res) => {
     try {
         const {email, googleId, fcm} = req.body;
@@ -162,13 +337,17 @@ const signUpWithGoogle = async (req, res) => {
 
 
         const token = myjwt.generateToken({userId: existingUser._id}, process.env.JWT_SECRET_KEY);
-        res.json({user: existingUser, token,userProfileUpdated:isProfileUpdate}); // Send user and token in the response
+        res.json({user: existingUser, token,userProfileUpdated:isProfileUpdate});
+
+        console.log({user: existingUser, token,userProfileUpdated:isProfileUpdate});
+        // Send user and token in the response
     } catch (error) {
         console.log('Error signing up with Google:', error);
         res.status(500).json({error: 'Failed to sign up with Google'});
     }
 };
 
+*/
 
 // Sign in with Google
 const signInWithGoogle = async (req, res) => {
@@ -388,24 +567,6 @@ const resetPassword = async (req, res) => {
     }
 };
 
-const userIsVerified = async(req,res) =>{
-  try {
-      const {userId} = req.body;
-
-
-
-      const userData = await User.findOne({_id:userId});
-
-      console.log(userData);
-
-      return res.json(userData);
-  }  catch (e) {
-      console.log(e);
-      return res.json(e)
-  }
-}
-
-
 
 function parseDuration(duration) {
     if (typeof duration !== 'string') {
@@ -448,6 +609,5 @@ module.exports = {
     forgotPassword,
     resetPassword,
     verifyForgetPassword,
-    userIsVerified,
     verifyUserEmail
 };
