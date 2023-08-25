@@ -394,11 +394,16 @@ const userIsVerified = async(req,res) =>{
 
 
 
-      const userData = await User.findOne({_id:userId});
+      let userData = await User.findOne({_id:userId});
+
+      if(userData.isEmailVerified!=null&&userData.isEmailVerified){
+          const token = myjwt.generateToken({userId: userData._id}, process.env.JWT_SECRET_KEY);
+          return res.json({data:userData,token:token});
+      }
 
       console.log(userData);
 
-      return res.json(userData);
+      return res.json({data:userData});
   }  catch (e) {
       console.log(e);
       return res.json(e)
