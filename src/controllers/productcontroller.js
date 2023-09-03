@@ -6,7 +6,7 @@ const getProducts = async (req, res) => {
         const userId = req.userId;
 
         const products = await Product.find({userId});
-        res.json({success:true,productData:products});
+        res.json({success: true, productData: products});
     } catch (error) {
         res.status(500).json({error: 'Internal server error'});
     }
@@ -31,7 +31,7 @@ const getProductById = async (req, res) => {
 // Create a new product
 const createProduct = async (req, res) => {
     try {
-        const {name, price, productCurrency, description,currencySymbol} = req.body;
+        const {name, price, productCurrency, description, currencySymbol} = req.body;
         const userId = req.userId; // Assuming you have the authenticated user's ID available in req.userId
 
 
@@ -86,12 +86,15 @@ const getProductCountByUser = async (req, res) => {
 // Update a product
 const updateProduct = async (req, res) => {
     try {
-        const {name, price, productCurrency, description} = req.body;
+
+        const {
+            name, price, productCurrency, description, currencySymbol,
+        } = req.body;
         const images = req.files.map((file) => file.path);
 
         const product = await Product.findByIdAndUpdate(
             req.params.id,
-            {name, price, productCurrency, description, images},
+            {name, price, productCurrency, description, images,currencySymbol},
             {new: true}
         );
 

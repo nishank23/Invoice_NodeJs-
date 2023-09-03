@@ -12,21 +12,7 @@ const fs = require('fs');
 exports.getLatestEstimationNo = async (req, res) => {
     try {
         const userId = req.userId;
-
         const nextEstimationNo= await getCurrentEstimationNumber(userId);
-/*
-        const latestEstimation = await Estimation.findOne({userId: userId }).sort({ estimationNo: -1 });
-
-
-        if (latestEstimation) {
-            console.log("inside");
-            res.status(200).json({data:{ estimationNo: "EST1"} });
-        } else {
-            console.log("no data");
-
-        }
-        */
-
         res.status(200).json({data:{ estimationNo: nextEstimationNo }});
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve the latest estimation number' });

@@ -1,16 +1,26 @@
 const mongoose = require('mongoose');
 
-const estimationSchema = new mongoose.Schema({
+const invoiceSchema = new mongoose.Schema({
+
     client: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Client',
         required: true
     },
-
-
-
-
-
+    shippingAddress: {
+        addressLine: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        country: { type: String, required: true },
+        postalCode: { type: String, required: true },
+    },
+    billingAddress: {
+        addressLine: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        country: { type: String, required: true },
+        postalCode: { type: String, required: true },
+    },
     products: [
         {
             product: {
@@ -53,9 +63,9 @@ const estimationSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            amount:{
-                type:Number,
-                required:true
+            amount: {
+                type: Number,
+                required: true
             }
         }
     ],
@@ -69,9 +79,9 @@ const estimationSchema = new mongoose.Schema({
         required: true,
 
     },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
 });
 
-const Estimation = mongoose.model('Estimation', estimationSchema);
+const Invoice = mongoose.model('Invoice', invoiceSchema);
 
-module.exports = Estimation;
+module.exports = Invoice;
