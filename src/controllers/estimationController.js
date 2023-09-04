@@ -80,7 +80,7 @@ exports.createEstimation = async (req, res) => {
             estimationNo: nextEstimationNo,
             estimationDate,
             currency,
-            itemTotal:itemTotal,
+            itemTotal,
             sign:signImage,
             subTotal,
             discount,
