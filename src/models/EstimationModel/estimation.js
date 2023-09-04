@@ -39,6 +39,10 @@ const estimationSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    itemTotal: {
+        type: Number,
+        required: true
+    },
     discount: {
         type: Number,
         default: 0
