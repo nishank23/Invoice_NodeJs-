@@ -111,7 +111,7 @@ const signInWithEmail = async (req, res) => {
             return res.status(400).json({error: 'User linked with Google'});
         }
 
-        const isPasswordValid = genverifypass.comparePasswords(password, user.password);
+        const isPasswordValid =await genverifypass.comparePasswords(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({error: 'Invalid password'});
         }
