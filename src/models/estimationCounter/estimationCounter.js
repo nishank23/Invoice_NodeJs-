@@ -6,7 +6,7 @@ const estimationCounterSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    currcounter: {
+    counter: {
         type: Number,
         required: true,
         default: 0

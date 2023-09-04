@@ -32,8 +32,6 @@ const getNextEstimationNumber = async (userId) => {
         estimationCount = { userId, counter: 1 }; // Set userId and default counter value
         await estimationCounter.create(estimationCount); // Create a new document
     }
-
-
     return `EST${estimationCount.counter}`;
 };const getCurrentEstimationNumber = async (userId) => {
     let estimationCount = await estimationCounter.findOne(
