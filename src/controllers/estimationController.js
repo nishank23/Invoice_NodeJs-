@@ -120,8 +120,8 @@ exports.getEstimationPreview = async (req,res) =>{
         console.log(estimation.sign);
 
         const clientbilledcity = await city.findOne({id: Number(estimation.client.billingAddress.city)});
-        const clientbilledstate = await city.findOne({id: Number(estimation.client.billingAddress.state)});
-        const clientbilledcountry = await city.findOne({id: parseInt(estimation.client.billingAddress.country)});
+        const clientbilledstate = await state.findOne({id: Number(estimation.client.billingAddress.state)});
+        const clientbilledcountry = await country.findOne({id: parseInt(estimation.client.billingAddress.country)});
 
         estimation.client.billingAddress.city = clientbilledcity.name;
         estimation.client.billingAddress.state = clientbilledstate.name;
@@ -130,8 +130,8 @@ exports.getEstimationPreview = async (req,res) =>{
 
         const userprofile = await UserProfile.findOne({userId: estimation.userId})
         const usercity = await city.findOne({id: parseInt(userprofile.address.city)});
-        const userstate = await city.findOne({id: parseInt(userprofile.address.state)});
-        const usercountry = await city.findOne({id: parseInt(userprofile.address.country)});
+        const userstate = await state.findOne({id: parseInt(userprofile.address.state)});
+        const usercountry = await country.findOne({id: parseInt(userprofile.address.country)});
 
 
         userprofile.address.city = usercity.name;
