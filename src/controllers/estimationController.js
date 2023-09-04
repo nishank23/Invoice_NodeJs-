@@ -15,6 +15,7 @@ exports.getLatestEstimationNo = async (req, res) => {
         const nextEstimationNo= await getCurrentEstimationNumber(userId);
         res.status(200).json({data:{ estimationNo: nextEstimationNo }});
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Failed to retrieve the latest estimation number' });
     }
 };
