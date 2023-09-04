@@ -202,8 +202,8 @@ exports.getAllEstimateData = async (req,res) =>{
 
 
         const clientbilledcity = await city.findOne({ id: Number(estimation.client.billingAddress.city) });
-        const clientbilledstate = await city.findOne({ id: Number(estimation.client.billingAddress.state) });
-        const clientbilledcountry = await city.findOne({ id: parseInt(estimation.client.billingAddress.country) });
+        const clientbilledstate = await state.findOne({ id: Number(estimation.client.billingAddress.state) });
+        const clientbilledcountry = await country.findOne({ id: parseInt(estimation.client.billingAddress.country) });
 
         estimation.client.billingAddress.city = clientbilledcity.name;
         estimation.client.billingAddress.state = clientbilledstate.name;
@@ -211,10 +211,15 @@ exports.getAllEstimateData = async (req,res) =>{
 
 
 
-        const userprofile = await UserProfile.findOne({userId:estimation.userId})
+        let userprofile = await UserProfile.findOne({userId:estimation.userId})
+        if (!userprofile) {
+            // Handle the case where userprofile is not found
+            return res.status(404).json({ message: 'User profile not found' });
+        }
+
         const usercity = await city.findOne({id:parseInt(userprofile.address.city)});
-        const userstate = await city.findOne({id:parseInt(userprofile.address.state)});
-        const usercountry = await city.findOne({id:parseInt(userprofile.address.country)});
+        const userstate = await state.findOne({id:parseInt(userprofile.address.state)});
+        const usercountry = await country.findOne({id:parseInt(userprofile.address.country)});
 
 
         userprofile.address.city = usercity.name;
