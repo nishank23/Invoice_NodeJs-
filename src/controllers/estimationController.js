@@ -32,7 +32,9 @@ const getNextEstimationNumber = async (userId) => {
     let estimationCount = await estimationCounter.findOne(
         { userId },
     );
-
+    if(estimationCount==null){
+        return `EST${1}`;
+    }
     return `EST${estimationCount.counter+1}`;
 };
 
