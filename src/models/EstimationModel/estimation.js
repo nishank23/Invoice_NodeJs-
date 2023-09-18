@@ -6,11 +6,6 @@ const estimationSchema = new mongoose.Schema({
         ref: 'Client',
         required: true
     },
-
-
-
-
-
     products: [
         {
             product: {
@@ -29,6 +24,10 @@ const estimationSchema = new mongoose.Schema({
         required: true
     },
     currency: {
+        type: String,
+        required: true
+    },
+    currencyId: {
         type: String,
         required: true
     },
