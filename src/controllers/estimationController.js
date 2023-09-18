@@ -61,7 +61,7 @@ exports.createEstimation = async (req, res) => {
 
         console.log(signImage);
 
-        const { client, products, estimationDate, currency,currencyId, subTotal, discount, taxes, totalAmount ,itemTotal} = req.body;
+        const { client, products, estimationDate, currency,currencyId, subTotal, discount,discountType, taxes, totalAmount ,itemTotal} = req.body;
 
 
         const parsedProducts = JSON.parse(products);
@@ -81,6 +81,7 @@ exports.createEstimation = async (req, res) => {
             estimationDate,
             currency,
             currencyId,
+            discountType,
             itemTotal,
             sign:signImage,
             subTotal,

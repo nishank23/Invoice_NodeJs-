@@ -46,6 +46,10 @@ const estimationSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    discountType: {
+        type: Number,
+        default: 0
+    },
     taxes: [
         {
             percentage: {
