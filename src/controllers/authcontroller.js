@@ -35,7 +35,7 @@ const signUpWithEmail = async (req, res) => {
                     service: 'gmail',
                     auth: {
                         user: 'bansalnishank4@gmail.com',
-                        pass: 'tddwprtfvcgyftyw',
+                        pass: 'sarl oria rwvn jswt',
                     },
                 });
 
@@ -75,7 +75,7 @@ const signUpWithEmail = async (req, res) => {
             service: 'gmail',
             auth: {
                 user: 'bansalnishank4@gmail.com',
-                pass: 'tddwprtfvcgyftyw',
+                pass: 'sarl oria rwvn jswt',
             },
         });
 
@@ -234,7 +234,7 @@ const forgotPassword = async (req, res) => {
             service: 'gmail',
             auth: {
                 user: 'bansalnishank4@gmail.com',
-                pass: 'tddwprtfvcgyftyw',
+                pass: 'sarl oria rwvn jswt',
             },
         });
 

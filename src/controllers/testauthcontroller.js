@@ -413,7 +413,7 @@ const forgotPassword = async (req, res) => {
             service: 'gmail',
             auth: {
                 user: 'bansalnishank4@gmail.com',
-                pass: 'tddwprtfvcgyftyw',
+                pass: 'sarl oria rwvn jswt',
             },
         });
 
