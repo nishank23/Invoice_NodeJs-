@@ -29,7 +29,7 @@ const signUpWithEmail = async (req, res) => {
                 await existingUser.save();
 
                 const encodedToken = Buffer.from(verificationToken).toString('base64');
-                const verificationLink = `http://165.22.218.255:3000/verify?token=${encodedToken}`;
+                const verificationLink = `http://159.65.4.9:3000/verify?token=${encodedToken}`;
 
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
@@ -69,7 +69,7 @@ const signUpWithEmail = async (req, res) => {
         await newUser.save();
 
         const encodedToken = Buffer.from(verificationToken).toString('base64');
-        const verificationLink = `http://165.22.218.255:3000/verify?token=${encodedToken}`;
+        const verificationLink = `http://159.65.4.9:3000/verify?token=${encodedToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
