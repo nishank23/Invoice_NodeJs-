@@ -29,11 +29,13 @@ const getNextInvoiceNumber = async (userId) => {
     return `EST${estimationCount.counter}`;
 };
 const getCurrentInvoiceNumber = async (userId) => {
-    let estimationCount = await invoiceCounter.findOne(
+    let invoiceCount = await invoiceCounter.findOne(
         {userId},
     );
-
-    return `EST${estimationCount.counter + 1}`;
+    if(invoiceCount==null){
+        return `EST${1}`;
+    }
+    return `EST${invoiceCount.counter + 1}`;
 };
 
 exports.createInvoice = async (req, res) => {
@@ -80,7 +82,6 @@ exports.createInvoice = async (req, res) => {
         const invoice = new Invoice({
             shippingAddress: parsedshipping,
             billingAddress: parsedBilling,
-
             products: parsedProducts,
             estimationNo: nextEstimationNo,
             estimationDate,
@@ -91,7 +92,6 @@ exports.createInvoice = async (req, res) => {
             taxes: parsedTaxes,
             totalAmount,
             userId
-
         });
         await invoice.save();
 

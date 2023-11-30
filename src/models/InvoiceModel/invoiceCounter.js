@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const estimationCounterSchema = new mongoose.Schema({
+const invoiceCounterSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -13,6 +13,6 @@ const estimationCounterSchema = new mongoose.Schema({
     }
 });
 
-const estimationCounter = mongoose.model('invoiceCounter', estimationCounterSchema);
+const invoiceCounter = mongoose.model('invoiceCounter', invoiceCounterSchema);
 
-module.exports = estimationCounter;
+module.exports = invoiceCounter;

@@ -38,6 +38,7 @@ const locationRoutes = require('./src/routes/locationrouter');
 const clientRouter = require('./src/routes/clientrouter');
 const productRouter = require('./src/routes/productroutes');
 const estimateRouter = require('./src/routes/estimationrouter');
+const invoiceRouter = require('./src/routes/invoicerouter');
 const verifyRouter = require('./src/routes/verifyroutes');
 
 
@@ -55,6 +56,7 @@ app.use('/api/v1',clientRouter);
 app.use('',verifyRouter);
 app.use('/api/v1/products',productRouter);
 app.use('/api/v1/',estimateRouter);
+app.use('/api/v1/',invoiceRouter);
 
 
 app.get('/reset-success', (req, res) => {
