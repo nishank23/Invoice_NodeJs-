@@ -6,7 +6,7 @@ const Client = require('../models/ClientModels/Client');
             const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
             console.log(userId);
             console.log(req.body);
-            const {clientId} = req.params.clientId;
+            const clientId = req.params.clientId;
 
 
 
