@@ -1,4 +1,7 @@
 const Client = require('../models/ClientModels/Client');
+const City = require("../models/addressModels/city");
+const State = require("../models/addressModels/state");
+const Country = require("../models/addressModels/country");
 
 // Create or Update Client
     const createOrUpdateClient = async (req, res) => {
@@ -6,7 +9,7 @@ const Client = require('../models/ClientModels/Client');
             const userId = req.userId; // Assuming you have the authenticated user's ID available in req.user.id
             console.log(userId);
             console.log(req.body);
-            const clientId = req.params.clientId;
+            const {clientId} = req.params.clientId;
 
 
 
@@ -145,18 +148,44 @@ const deleteClient = async (req, res) => {
 };
 const getClientById = async (req, res) => {
     try {
-        const {clientId} = req.params;
+        const { clientId } = req.params;
 
         const client = await Client.findById(clientId);
         if (!client) {
-            return res.status(400).json({message: 'Client not found.'});
+            return res.status(400).json({ message: 'Client not found.' });
         }
 
-        res.status(200).json({success:true,clientData:client});
+        // Fetch address details using findOne
+        const city_ship = await City.findOne({ id: client.shippingAddress.city });
+        const state_ship = await State.findOne({ id: client.shippingAddress.state });
+        const country_ship = await Country.findOne({ id: client.shippingAddress.country });
+
+        const city_bill = await City.findOne({ id: client.billingAddress.city });
+        const state_bill = await State.findOne({ id: client.billingAddress.state });
+        const country_bill = await Country.findOne({ id: client.billingAddress.country });
+
+        // Combine information
+        const clientData = {
+            ...client.toObject(), // Convert Mongoose model instance to plain object
+            shippingAddressDetails: {
+                city: city_ship ? city_ship.name : null,
+                state: state_ship ? state_ship.name : null,
+                country: country_ship ? country_ship.name : null
+            },
+            billingAddressDetails: {
+                city: city_bill ? city_bill.name : null,
+                state: state_bill ? state_bill.name : null,
+                country: country_bill ? country_bill.name : null
+            }
+        };
+
+        res.status(200).json({ success: true, clientData });
     } catch (error) {
-        res.status(500).json({message: 'Failed to fetch client.', error});
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch client.', error });
     }
 };
+
 
 module.exports = {
     createOrUpdateClient, getClientsByUser, uploadClientProfile, getClientById, deleteClient

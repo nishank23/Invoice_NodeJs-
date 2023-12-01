@@ -34,7 +34,11 @@ const invoiceSchema = new mongoose.Schema({
             }
         }
     ],
-    estimationDate: {
+    invoiceDate: {
+        type: Date,
+        required: true
+    },
+    dueDate: {
         type: Date,
         required: true
     },
