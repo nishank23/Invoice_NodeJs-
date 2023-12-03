@@ -49,6 +49,8 @@ const Country = require("../models/addressModels/country");
                     website: parsedCompany.website || '',
                 };
                 client.shippingAddress = {
+                    personName: parsedsAddress.personName,
+                    mobileNumber: parsedsAddress.mobileNumber,
                     addressLine: parsedsAddress.addressLine,
                     city: parsedsAddress.city,
                     state: parsedsAddress.state,
@@ -56,6 +58,8 @@ const Country = require("../models/addressModels/country");
                     postalCode: parsedsAddress.postalCode,
                 };
                 client.billingAddress = {
+                    personName: parsedbAddress.personName,
+                    mobileNumber: parsedbAddress.mobileNumber,
                     addressLine: parsedbAddress.addressLine,
                     city: parsedbAddress.city,
                     state: parsedbAddress.state,
@@ -78,13 +82,18 @@ const Country = require("../models/addressModels/country");
                         gstNumber: parsedCompany.gstNumber,
                         email: parsedCompany.email,
                         website: parsedCompany.website || '',
-                    }, shippingAddress: {
+                    },
+                    shippingAddress: {
+                        personName: parsedsAddress.personName,
+                        mobileNumber: parsedsAddress.mobileNumber,
                         addressLine: parsedsAddress.addressLine,
                         city: parsedsAddress.city,
                         state: parsedsAddress.state,
                         country: parsedsAddress.country,
                         postalCode: parsedsAddress.postalCode,
                     }, billingAddress: {
+                        personName: parsedbAddress.personName,
+                        mobileNumber: parsedbAddress.mobileNumber,
                         addressLine: parsedbAddress.addressLine,
                         city: parsedbAddress.city,
                         state: parsedbAddress.state,
