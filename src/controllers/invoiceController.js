@@ -126,7 +126,7 @@ exports.getInvoicePreview = async (req, res) => {
             return res.status(404).json({message: 'Estimation not found'});
         }
 
-        console.log(estimation.sign);
+
 
         const clientbilledcity = await city.findOne({id: Number(invoice.billingAddress.city)});
         const clientbilledstate = await city.findOne({id: Number(invoice.billingAddress.state)});
