@@ -152,7 +152,7 @@ exports.getEstimationPreview = async (req,res) =>{
         const renderedHtml = await ejs.renderFile(path.join(__dirname, '../../views/myinvoice.ejs'), {
             estimation: estimation,
             userprofile: userprofile,
-            baseUrl: "http://165.22.218.255:3000/"
+            baseUrl: "http://159.65.4.9:3000/"
         });
 
         // Create a temporary HTML file with the rendered HTML content
