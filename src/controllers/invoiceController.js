@@ -119,6 +119,7 @@ exports.getInvoicePreview = async (req, res) => {
                 path: 'products.product',
                 select: 'name price currencySymbol images',
             })
+            .populate('client');
 
 
         if (!estimation) {
@@ -278,7 +279,7 @@ exports.getInvoiceByUser = async (req, res) => {
     try {
         const userId = req.userId;
 
-        const invoice = await Invoice.find({userId: userId});
+        const invoice = await Invoice.find({userId: userId}).populate('client');
         if (!invoice) {
             return res.status(404).json({error: 'Estimation not found'});
         }
