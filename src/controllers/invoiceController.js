@@ -57,6 +57,7 @@ exports.createInvoice = async (req, res) => {
         console.log(signImage);
 
         const {
+            client,
             billingAddress,
             shippingAddress,
             products,
@@ -81,6 +82,7 @@ exports.createInvoice = async (req, res) => {
 
 
         const invoice = new Invoice({
+           client,
             shippingAddress: parsedshipping,
             billingAddress: parsedBilling,
             products: parsedProducts,
