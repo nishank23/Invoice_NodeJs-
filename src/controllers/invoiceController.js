@@ -214,6 +214,7 @@ exports.getAllInvoiceData = async (req, res) => {
                 path: 'products.product',
                 select: 'name price currencySymbol images',
             })
+            .populate('client');
 
 
 
