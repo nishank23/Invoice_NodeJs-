@@ -252,9 +252,6 @@ exports.getAllInvoiceData = async (req, res) => {
         userprofile.address.country = usercountry.name;
 
 
-        console.log(estimation.sign);
-
-
         res.json({invoice: invoice, userprofile: userprofile});
 
     } catch (e) {
