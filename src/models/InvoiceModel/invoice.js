@@ -8,6 +8,8 @@ const invoiceSchema = new mongoose.Schema({
         required: true
     },
     shippingAddress: {
+        personName: { type: String, required: true },
+        mobileNumber: { type: String, required: true },
         addressLine: { type: String, required: true },
         city: { type: String, required: true },
         state: { type: String, required: true },
@@ -15,6 +17,8 @@ const invoiceSchema = new mongoose.Schema({
         postalCode: { type: String, required: true },
     },
     billingAddress: {
+        personName: { type: String, required: true },
+        mobileNumber: { type: String, required: true },
         addressLine: { type: String, required: true },
         city: { type: String, required: true },
         state: { type: String, required: true },
