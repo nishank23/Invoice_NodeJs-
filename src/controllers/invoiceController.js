@@ -122,7 +122,7 @@ exports.getInvoicePreview = async (req, res) => {
             .populate('client');
 
 
-        if (!estimation) {
+        if (!invoice) {
             return res.status(404).json({message: 'Estimation not found'});
         }
 
