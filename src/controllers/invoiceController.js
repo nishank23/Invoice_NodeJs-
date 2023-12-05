@@ -65,6 +65,9 @@ exports.createInvoice = async (req, res) => {
             dueDate,
             currency,
             subTotal,
+            itemTotal,
+            discountType,
+            currencyId,
             discount,
             taxes,
             totalAmount
@@ -90,6 +93,9 @@ exports.createInvoice = async (req, res) => {
             invoiceDate,
             dueDate,
             currency,
+            currencyId,
+            itemTotal,
+            discountType,
             sign: signImage,
             subTotal,
             discount,
@@ -158,9 +164,6 @@ exports.getInvoicePreview = async (req, res) => {
         userprofile.address.country = usercountry.name;
 
 
-        console.log(path.join(__dirname));
-        console.log(path.join(__dirname, "./../views/myinvoice.ejs"));
-
         /*
                 res.render('invoice', { estimation });
         */
@@ -168,7 +171,7 @@ exports.getInvoicePreview = async (req, res) => {
         const renderedHtml = await ejs.renderFile(path.join(__dirname, '../../views/myinvoice.ejs'), {
             invoice: invoice,
             userprofile: userprofile,
-            baseUrl: "http://165.22.218.255:3000/"
+            baseUrl: "http://159.65.4.9:3000/"
         });
 
         // Create a temporary HTML file with the rendered HTML content

@@ -143,13 +143,13 @@ exports.getEstimationPreview = async (req,res) =>{
 
 
         console.log(path.join(__dirname));
-        console.log(path.join(__dirname, "./../views/myinvoice.ejs"));
+        console.log(path.join(__dirname, "./../views/myestimate.ejs"));
 
         /*
                 res.render('invoice', { estimation });
         */
 
-        const renderedHtml = await ejs.renderFile(path.join(__dirname, '../../views/myinvoice.ejs'), {
+        const renderedHtml = await ejs.renderFile(path.join(__dirname, '../../views/myestimate.ejs'), {
             estimation: estimation,
             userprofile: userprofile,
             baseUrl: "http://159.65.4.9:3000/"

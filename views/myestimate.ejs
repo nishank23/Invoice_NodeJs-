@@ -241,27 +241,27 @@
                                     <h3>Invoice No:</h3>
                                 </div>
                                 <div class="col-6">
-                                    <p><%= invoice.invoiceNo %></p>
+                                    <p><%= estimation.estimationNo %></p>
                                 </div>
                             </div>
                             <%
                             // Parse the date string to a Date object
-                            const invoiceDate = new Date(invoice.invoiceDate);
+                            const estimationDate = new Date(estimation.estimationDate);
 
                             // Get the day, month, and year
-                            const day = invoiceDate.getDate().toString().padStart(2, '0');
-                            const month = (invoiceDate.getMonth() + 1).toString().padStart(2, '0'); // Note: Months are zero-indexed, so we add 1
-                            const year = invoiceDate.getFullYear().toString();
+                            const day = estimationDate.getDate().toString().padStart(2, '0');
+                            const month = (estimationDate.getMonth() + 1).toString().padStart(2, '0'); // Note: Months are zero-indexed, so we add 1
+                            const year = estimationDate.getFullYear().toString();
 
                             // Construct the formatted date in the format dd-mm-yyyy
-                            const invoiceDateFormatted = `${day}-${month}-${year}`;
+                            const estimationDateFormatted = `${day}-${month}-${year}`;
                             %>
                             <div class="row">
                                 <div class="col-6">
                                     <h3>Date:</h3>
                                 </div>
                                 <div class="col-6">
-                                    <p><%= invoiceDateFormatted %></p>
+                                    <p><%= estimationDateFormatted %></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -269,7 +269,7 @@
                                     <h3>GST:</h3>
                                 </div>
                                 <div class="col-6">
-                                    <p><%= invoice.client.company.gstNumber %></p>
+                                    <p><%= estimation.client.company.gstNumber %></p>
                                 </div>
                             </div>
                         </div>
@@ -279,17 +279,17 @@
                     <div class="col-6">
                         <div class="name_left">
                             <h3>Billed to:</h3>
-                            <h2><%= invoice.client.company.name %></h2>
-                            <p><%= invoice.client.company.mobileNumber %></p>
-                            <p><%= invoice.client.billingAddress.addressLine %></p>
+                            <h2><%= estimation.client.company.name %></h2>
+                            <p><%= estimation.client.company.mobileNumber %></p>
+                            <p><%= estimation.client.billingAddress.addressLine %></p>
                         </div>
                     </div>
                    <!-- <div class="col-6">
                         <div class="name_left">
                             <h3>Shipped to:</h3>
-                            <h2><%= invoice.shippedToName %></h2>
-                            <p><%= invoice.shippedToPhone %></p>
-                            <p><%= invoice.shippedToAddress %></p>
+                            <h2><%= estimation.shippedToName %></h2>
+                            <p><%= estimation.shippedToPhone %></p>
+                            <p><%= estimation.shippedToAddress %></p>
                         </div>
                     </div>-->
                 </div>
@@ -307,7 +307,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% invoice.products.forEach((product, index) => { %>
+                <% estimation.products.forEach((product, index) => { %>
                     <tr>
                         <td><%= index + 1 %>.</td>
                         <td><%= product.product.name %></td>
@@ -365,10 +365,10 @@
                                     <h3>Sub Total:</h3>
                                 </div>
                                 <div class="col-6">
-                                    <p><%= invoice.currency %> <%= invoice.subTotal.toFixed(2) %></p>
+                                    <p><%= estimation.currency %> <%= estimation.subTotal.toFixed(2) %></p>
                                 </div>
                             </div>
-                            <% invoice.taxes.forEach((tax) => { %>
+                            <% estimation.taxes.forEach((tax) => { %>
                                 <div class="row">
                                     <div class="col-6">
                                         <h3><%= tax.name %>:</h3>
@@ -384,7 +384,7 @@
                                         <h3 class="mb-0">Total:</h3>
                                     </div>
                                     <div class="col-6">
-                                        <p class="mb-0"><%= invoice.currency %> <%= invoice.totalAmount.toFixed(2) %></p>
+                                        <p class="mb-0"><%= estimation.currency %> <%= estimation.totalAmount.toFixed(2) %></p>
                                     </div>
                                 </div>
                             </div>
@@ -399,7 +399,7 @@
         <div class="top_line">
             <div class="first_bdr dark_bdr"></div>
             <div class="signature_pdf mx-4">
-                <img src="<%= baseUrl %><%= invoice.sign %>" alt=""/>
+                <img src="<%= baseUrl %><%= estimation.sign %>" alt=""/>
                 <div class="bdr_btm my-2"></div>
                 <h3>Authorised Sign</h3>
             </div>

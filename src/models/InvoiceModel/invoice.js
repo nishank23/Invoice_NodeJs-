@@ -50,6 +50,10 @@ const invoiceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    currencyId: {
+        type: String,
+        required: true
+    },
     sign: {
         type: String,
     },
@@ -57,7 +61,15 @@ const invoiceSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    itemTotal: {
+        type: Number,
+        required: true
+    },
     discount: {
+        type: Number,
+        default: 0
+    },
+    discountType: {
         type: Number,
         default: 0
     },
