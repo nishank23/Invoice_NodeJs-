@@ -1,458 +1,473 @@
-const User = require('../models/UserModels/user');
-const UserProfile = require('../models/UserModels/userprofile');
-const genverifypass = require('../helpers/password');
-const myjwt = require('../helpers/jwt');
-const dotenv = require('dotenv');
-dotenv.config({path: './config.env'});
-const nodemailer = require('nodemailer');
-const {getMessaging} = require("firebase-admin/messaging");
+const User = require("../models/UserModels/user");
+const UserProfile = require("../models/UserModels/userprofile");
+const genverifypass = require("../helpers/password");
+const myjwt = require("../helpers/jwt");
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
+const nodemailer = require("nodemailer");
+const { getMessaging } = require("firebase-admin/messaging");
 // Sign up with email
 const signUpWithEmail = async (req, res) => {
-    try {
-        const {email, password, fcm} = req.body;
+  try {
+    const { email, password, fcm } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({email});
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
 
-        if (existingUser) {
-            if (existingUser.isEmailVerified) {
-                return res.status(400).json({error: 'User already exists'});
-            } else {
-                // Update existing user's details
-                const hashpwd = await genverifypass.generatePasswordHash(password);
-                await User.updateOne({email}, {$set: {password: hashpwd, fcm}});
-
-                // Resend the verification email
-                const {token: verificationToken, expiresIn} = myjwt.generateResetToken();
-                existingUser.emailVerificationToken = verificationToken;
-                existingUser.emailVerificationExpires = new Date(Date.now() + parseDuration(expiresIn));
-                await existingUser.save();
-
-                const encodedToken = Buffer.from(verificationToken).toString('base64');
-                const verificationLink = `http://159.65.4.9:3000/verify?token=${encodedToken}`;
-
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                        user: 'bansalnishank4@gmail.com',
-                        pass: 'sarl oria rwvn jswt',
-                    },
-                });
-
-                const mailOptions = {
-                    from: 'bansalnishank4@gmail.com',
-                    to: email,
-                    subject: 'Verify Account',
-                    text: `Please confirm on the below link to verify your account \n ${verificationLink} request after confirming the request we suggest you to move back to app to reset password`,
-                };
-
-                // Send the email
-                await transporter.sendMail(mailOptions);
-
-                return res.json({message: 'Email verification instructions sent to email',data:existingUser._id});
-            }
-        }
-
-        // If the user does not exist, proceed with new user registration
+    if (existingUser) {
+      if (existingUser.isEmailVerified) {
+        return res.status(400).json({ error: "User already exists" });
+      } else {
+        // Update existing user's details
         const hashpwd = await genverifypass.generatePasswordHash(password);
+        await User.updateOne({ email }, { $set: { password: hashpwd, fcm } });
 
-        // Generate email verification token
-        const {token: verificationToken, expiresIn} = myjwt.generateResetToken();
+        // Resend the verification email
+        const { token: verificationToken, expiresIn } =
+          myjwt.generateResetToken();
+        existingUser.emailVerificationToken = verificationToken;
+        existingUser.emailVerificationExpires = new Date(
+          Date.now() + parseDuration(expiresIn)
+        );
+        await existingUser.save();
 
-        const newUser = new User({
-            email,
-            password: hashpwd,
-            fcm,
-            emailVerificationToken: verificationToken,
-            emailVerificationExpires: new Date(Date.now() + parseDuration(expiresIn)), // Set verification token expiration
-        });
-        await newUser.save();
-
-        const encodedToken = Buffer.from(verificationToken).toString('base64');
-        const verificationLink = `http://159.65.4.9:3000/verify?token=${encodedToken}`;
+        const encodedToken = Buffer.from(verificationToken).toString("base64");
+        const verificationLink = `http://10.0.2.2:3000/verify?token=${encodedToken}`;
 
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'bansalnishank4@gmail.com',
-                pass: 'sarl oria rwvn jswt',
-            },
+          service: "gmail",
+          auth: {
+            user: "bansalnishank4@gmail.com",
+            pass: "jtdl poru bhfy ebab",
+          },
         });
 
         const mailOptions = {
-            from: 'bansalnishank4@gmail.com',
-            to: email,
-            subject: 'Verify Account',
-            text: `Please confirm on the below link to verify your account \n ${verificationLink} request after confirming the request we suggest you to move back to app to reset password`,
+          from: "bansalnishank4@gmail.com",
+          to: email,
+          subject: "Verify Account",
+          text: `Please confirm on the below link to verify your account \n ${verificationLink} request after confirming the request we suggest you to move back to app to reset password`,
         };
 
         // Send the email
         await transporter.sendMail(mailOptions);
 
-        return res.json({message: 'Email verification instructions sent to email',data:newUser._id});
-    } catch (error) {
-        console.log('Error signing up with email:', error);
-        res.status(500).json({error: 'Failed to sign up with email'});
+        return res.json({
+          message: "Email verification instructions sent to email",
+          data: existingUser._id,
+        });
+      }
     }
+
+    // If the user does not exist, proceed with new user registration
+    const hashpwd = await genverifypass.generatePasswordHash(password);
+
+    // Generate email verification token
+    const { token: verificationToken, expiresIn } = myjwt.generateResetToken();
+
+    const newUser = new User({
+      email,
+      password: hashpwd,
+      fcm,
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: new Date(Date.now() + parseDuration(expiresIn)), // Set verification token expiration
+    });
+    await newUser.save();
+
+    const encodedToken = Buffer.from(verificationToken).toString("base64");
+    const verificationLink = `http://10.0.2.2:3000//verify?token=${encodedToken}`;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "bansalnishank4@gmail.com",
+        pass: "jtdl poru bhfy ebab",
+      },
+    });
+
+    const mailOptions = {
+      from: "bansalnishank4@gmail.com",
+      to: email,
+      subject: "Verify Account",
+      text: `Please confirm on the below link to verify your account \n ${verificationLink} request after confirming the request we suggest you to move back to app to reset password`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    return res.json({
+      message: "Email verification instructions sent to email",
+      data: newUser._id,
+    });
+  } catch (error) {
+    console.log("Error signing up with email:", error);
+    res.status(500).json({ error: "Failed to sign up with email" });
+  }
 };
 
 // Sign in with email
 const signInWithEmail = async (req, res) => {
-    try {
-        const {email, password, fcm} = req.body;
+  try {
+    const { email, password, fcm } = req.body;
 
-        // Check if user exists
-        const user = await User.findOne({email});
-        if (!user) {
-            return res.status(400).json({error: 'No User found'});
-        }
-
-        if (user.password == null && user.googleId) {
-            return res.status(400).json({error: 'User linked with Google'});
-        }
-
-        const isPasswordValid =await genverifypass.comparePasswords(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).json({error: 'Invalid password'});
-        }
-        user.fcm = fcm;
-        // Generate JWT token
-        user.lastSignInAt = new Date();
-        await user.save();
-
-        const token = myjwt.generateToken({userId: user._id}, process.env.JWT_SECRET_KEY);
-        res.json({user, token}); // Send user and token in the response
-    } catch (error) {
-        console.log('Error signing in with email:', error);
-        res.status(500).json({error: 'Failed to sign in with email'});
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "No User found" });
     }
+
+    if (user.password == null && user.googleId) {
+      return res.status(400).json({ error: "User linked with Google" });
+    }
+
+    const isPasswordValid = await genverifypass.comparePasswords(
+      password,
+      user.password
+    );
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: "Invalid password" });
+    }
+    user.fcm = fcm;
+    // Generate JWT token
+    user.lastSignInAt = new Date();
+    await user.save();
+
+    const token = myjwt.generateToken(
+      { userId: user._id },
+      process.env.JWT_SECRET_KEY
+    );
+    res.json({ user, token }); // Send user and token in the response
+  } catch (error) {
+    console.log("Error signing in with email:", error);
+    res.status(500).json({ error: "Failed to sign in with email" });
+  }
 };
 
 // Sign up with Google
 const signUpWithGoogle = async (req, res) => {
-    try {
-        const {email, googleId, fcm} = req.body;
+  try {
+    const { email, googleId, fcm } = req.body;
 
-        // Check if user already exists
-        let existingUser = await User.findOne({email});
+    // Check if user already exists
+    let existingUser = await User.findOne({ email });
 
-        let isProfileUpdate= false;
+    let isProfileUpdate = false;
 
-        if (existingUser) {
-            let userProfile = await UserProfile.findOne({userId:existingUser._id});
-            if(userProfile!=null){
+    if (existingUser) {
+      let userProfile = await UserProfile.findOne({ userId: existingUser._id });
+      if (userProfile != null) {
+        isProfileUpdate = true;
+      }
+      console.log(userProfile); // Use console.log to log the userProfile
 
-                isProfileUpdate=true;
-            }
-            console.log(userProfile); // Use console.log to log the userProfile
-
-
-            existingUser.googleId = googleId;
-            existingUser.fcm = fcm;
-            await existingUser.save();
-        } else {
-            // Create new user if the user doesn't exist
-            existingUser = new User({
-                email,
-                googleId,
-                fcm
-            });
-            await existingUser.save();
-        }
-
-
-        const token = myjwt.generateToken({userId: existingUser._id}, process.env.JWT_SECRET_KEY);
-        res.json({user: existingUser, token,userProfileUpdated:isProfileUpdate}); // Send user and token in the response
-    } catch (error) {
-        console.log('Error signing up with Google:', error);
-        res.status(500).json({error: 'Failed to sign up with Google'});
+      existingUser.googleId = googleId;
+      existingUser.fcm = fcm;
+      await existingUser.save();
+    } else {
+      // Create new user if the user doesn't exist
+      existingUser = new User({
+        email,
+        googleId,
+        fcm,
+      });
+      await existingUser.save();
     }
-};
 
+    const token = myjwt.generateToken(
+      { userId: existingUser._id },
+      process.env.JWT_SECRET_KEY
+    );
+    res.json({
+      user: existingUser,
+      token,
+      userProfileUpdated: isProfileUpdate,
+    }); // Send user and token in the response
+  } catch (error) {
+    console.log("Error signing up with Google:", error);
+    res.status(500).json({ error: "Failed to sign up with Google" });
+  }
+};
 
 // Sign in with Google
 const signInWithGoogle = async (req, res) => {
-    try {
-        const {googleId, fcm} = req.body;
+  try {
+    const { googleId, fcm } = req.body;
 
-        // Check if user exists
-        const user = await User.findOne({googleId});
-        if (!user) {
-            return res.status(400).json({error: 'User not found.Please do google sign up first'});
-        }
-
-        // Generate JWT token
-        user.fcm = fcm
-        user.lastSignInAt = new Date();
-        await user.save();
-
-        const token = myjwt.generateToken({userId: user._id}, process.env.JWT_SECRET_KEY);
-        res.json({user, token}); // Send user and token in the response
-    } catch (error) {
-        console.log('Error signing in with Google:', error);
-        res.status(500).json({error: 'Failed to sign in with Google'});
+    // Check if user exists
+    const user = await User.findOne({ googleId });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ error: "User not found.Please do google sign up first" });
     }
+
+    // Generate JWT token
+    user.fcm = fcm;
+    user.lastSignInAt = new Date();
+    await user.save();
+
+    const token = myjwt.generateToken(
+      { userId: user._id },
+      process.env.JWT_SECRET_KEY
+    );
+    res.json({ user, token }); // Send user and token in the response
+  } catch (error) {
+    console.log("Error signing in with Google:", error);
+    res.status(500).json({ error: "Failed to sign in with Google" });
+  }
 };
 
 const forgotPassword = async (req, res) => {
-    try {
-        const {email, fcm} = req.body;
-
-        // Check if user exists
-        const user = await User.findOne({email});
-        if (!user) {
-            return res.status(400).json({error: 'User not found'});
-        }
-
-
-        if (user.password == null) {
-            return res.status(400).json({error: 'User not signed up with mail'});
-        }
-
-        // Generate reset token
-        const {token, expiresIn} = myjwt.generateResetToken();
-        const durationString = '24h';
-
-        const duration = parseDuration(expiresIn); // Convert the duration string to milliseconds
-
-
-        console.log(myjwt.generateResetToken());
-        user.resetPasswordToken = token.toString();
-        const resetPasswordExpires = new Date(Date.now() + duration); // Calculate the expiration date/time
-
-        user.resetPasswordExpires = resetPasswordExpires;
-        user.fcm = fcm;
-        await user.save();
-
-        // to encode the generated reset passwordtoken and make short it
-        const encodedToken = Buffer.from(token).toString('base64');
-
-
-        const resetPasswordLink = `http://165.22.218.255:3000/verifyforget?token=${encodedToken}`;
-
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'bansalnishank4@gmail.com',
-                pass: 'sarl oria rwvn jswt',
-            },
-        });
-
-        const mailOptions = {
-            from: 'bansalnishank4@gmail.com',
-            to: email,
-            subject: 'Reset Password',
-            text: `Please confirm on the below link to confirm your reset password \n ${resetPasswordLink} request after confirming the request we suggest you to move back to app to reset password`,
-        };
-
-        // Send the email
-        await transporter.sendMail(mailOptions);
-
-
-        res.json({message: 'Verify mail'});
-    } catch (error) {
-        console.log('Error in forgot password:', error);
-        res.status(500).json({error: 'Failed to send password reset instructions'});
-    }
-};
-
-
-const verifyForgetPassword = async (req, res) => {
-    try {
-
-        const {token} = req.query;
-        const decodedToken = Buffer.from(token, 'base64').toString();
-
-        const user = await User.findOne({
-            resetPasswordToken: decodedToken.toString(),
-            resetPasswordExpires: {$gt: Date.now()}
-        });
-
-        if (!user) {
-            return res.status(400).json({error: 'Invalid or token got expired.'})
-        }
-        //get fcm data from user model and send the token to particular user for reset passowrd
-
-
-        console.log(user.fcm)
-
-
-        const message = {
-            token: user.fcm,
-            data: {
-                key: 'Password Reset Token',
-                value: `${decodedToken}`
-            },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
-
-        };
-        getMessaging().send(message).then((response) => {
-            console.log('Successfully sent message:', response);
-
-        }).catch((error) => {
-            console.log('Error sending message:', error);
-
-        });
-        res.redirect('/reset-success');
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({error: 'Failed to verify reset password confirmation'});
-    }
-}
-const verifyUserEmail = async (req, res) => {
-    try {
-
-        const {token} = req.query;
-        const decodedToken = Buffer.from(token, 'base64').toString();
-
-        const user = await User.findOne({
-            emailVerificationToken: decodedToken.toString(),
-            emailVerificationExpires: {$gt: Date.now()}
-        });
-
-
-        if (!user) {
-            return res.status(400).json({error: 'Invalid or token got expired.'})
-        }
-        //get fcm data from user model and send the token to particular user for reset passowrd
-
-
-        console.log(user.fcm)
-
-        const usertoken = myjwt.generateToken({userId: user._id}, process.env.JWT_SECRET_KEY);
-
-        const message = {
-            token: user.fcm,
-            data: {
-                key: 'Verify User Token',
-                value: JSON.stringify({user, token: usertoken})
-            },// Assuming the user's FCM token is stored in the 'fcm' field of the user model
-
-        };
-        getMessaging().send(message).then(async (response) => {
-
-            user.isEmailVerified = true;
-            await user.save();
-            console.log('Successfully sent message:', response);
-
-        }).catch((error) => {
-            console.log('Error sending message:', error);
-
-        })
-
-        res.redirect('/verify-success');
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({error: 'Failed to verify reset password confirmation'});
-    }
-}
-
-
-const resetPassword = async (req, res) => {
-    try {
-        const {token} = req.params;
-        const {password} = req.body;
-
-
-        console.log(token);
-
-        // Check if token is valid and not expired
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpires: {$gt: Date.now()},
-        });
-        if (!user) {
-            return res.status(400).json({error: 'Invalid or expired reset token'});
-        }
-        const isSamePassword = await user.comparePassword(password);
-
-        if (isSamePassword) {
-            return res.status(400).json({error: 'Cannot use the previous password'});
-        }
-
-
-        // Generate new password hash
-        const hashpwd = await genverifypass.generatePasswordHash(password);
-
-        // Update user's password
-        user.password = hashpwd;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
-        await user.save();
-
-        res.json({message: 'Password reset successfully'});
-    } catch (error) {
-        console.log('Error in reset password:', error);
-        res.status(500).json({error: 'Failed to reset password'});
-    }
-};
-
-const userIsVerified = async(req,res) =>{
   try {
-      const {userId} = req.body;
+    const { email, fcm } = req.body;
 
-
-
-      let userData = await User.findOne({_id:userId});
-
-      if(userData.isEmailVerified!=null&&userData.isEmailVerified){
-          const token = myjwt.generateToken({userId: userData._id}, process.env.JWT_SECRET_KEY);
-          return res.json({data:userData,token:token});
-      }
-
-      console.log(userData);
-
-      return res.json({data:userData});
-  }  catch (e) {
-      console.log(e);
-      return res.json(e)
-  }
-}
-
-
-
-function parseDuration(duration) {
-    if (typeof duration !== 'string') {
-        throw new Error('Invalid duration format');
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
     }
 
-    const regex = /^(\d+)([smhdwMy]?)$/; // Regular expression to match the duration string
-    const matches = duration.match(regex);
-    if (!matches) {
-        throw new Error('Invalid duration format');
+    if (user.password == null) {
+      return res.status(400).json({ error: "User not signed up with mail" });
     }
 
-    const value = parseInt(matches[1]);
-    const unit = matches[2];
+    // Generate reset token
+    const { token, expiresIn } = myjwt.generateResetToken();
+    const durationString = "24h";
 
-    // Define the duration conversion values in milliseconds
-    const conversion = {
-        s: 1000, // seconds
-        m: 1000 * 60, // minutes
-        h: 1000 * 60 * 60, // hours
-        d: 1000 * 60 * 60 * 24, // days
-        w: 1000 * 60 * 60 * 24 * 7, // weeks
-        M: 1000 * 60 * 60 * 24 * 30, // months (approximate)
-        y: 1000 * 60 * 60 * 24 * 365 // years (approximate)
+    const duration = parseDuration(expiresIn); // Convert the duration string to milliseconds
+
+    console.log(myjwt.generateResetToken());
+    user.resetPasswordToken = token.toString();
+    const resetPasswordExpires = new Date(Date.now() + duration); // Calculate the expiration date/time
+
+    user.resetPasswordExpires = resetPasswordExpires;
+    user.fcm = fcm;
+    await user.save();
+
+    // to encode the generated reset passwordtoken and make short it
+    const encodedToken = Buffer.from(token).toString("base64");
+
+    const resetPasswordLink = `http://10.0.2.2:3000/verifyforget?token=${encodedToken}`;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "bansalnishank4@gmail.com",
+        pass: "jtdl poru bhfy ebab",
+      },
+    });
+
+    const mailOptions = {
+      from: "bansalnishank4@gmail.com",
+      to: email,
+      subject: "Reset Password",
+      text: `Please confirm on the below link to confirm your reset password \n ${resetPasswordLink} request after confirming the request we suggest you to move back to app to reset password`,
     };
 
-    if (!conversion[unit]) {
-        throw new Error('Invalid duration unit');
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    res.json({ message: "Verify mail" });
+  } catch (error) {
+    console.log("Error in forgot password:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to send password reset instructions" });
+  }
+};
+
+const verifyForgetPassword = async (req, res) => {
+  try {
+    const { token } = req.query;
+    const decodedToken = Buffer.from(token, "base64").toString();
+
+    const user = await User.findOne({
+      resetPasswordToken: decodedToken.toString(),
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or token got expired." });
+    }
+    //get fcm data from user model and send the token to particular user for reset passowrd
+
+    console.log(user.fcm);
+
+    const message = {
+      token: user.fcm,
+      data: {
+        key: "Password Reset Token",
+        value: `${decodedToken}`,
+      }, // Assuming the user's FCM token is stored in the 'fcm' field of the user model
+    };
+    getMessaging()
+      .send(message)
+      .then((response) => {
+        console.log("Successfully sent message:", response);
+      })
+      .catch((error) => {
+        console.log("Error sending message:", error);
+      });
+    res.redirect("/reset-success");
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "Failed to verify reset password confirmation" });
+  }
+};
+const verifyUserEmail = async (req, res) => {
+  try {
+    const { token } = req.query;
+    const decodedToken = Buffer.from(token, "base64").toString();
+
+    const user = await User.findOne({
+      emailVerificationToken: decodedToken.toString(),
+      emailVerificationExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or token got expired." });
+    }
+    //get fcm data from user model and send the token to particular user for reset passowrd
+
+    console.log(user.fcm);
+
+    const usertoken = myjwt.generateToken(
+      { userId: user._id },
+      process.env.JWT_SECRET_KEY
+    );
+
+    const message = {
+      token: user.fcm,
+      data: {
+        key: "Verify User Token",
+        value: JSON.stringify({ user, token: usertoken }),
+      }, // Assuming the user's FCM token is stored in the 'fcm' field of the user model
+    };
+    getMessaging()
+      .send(message)
+      .then(async (response) => {
+        user.isEmailVerified = true;
+        await user.save();
+        console.log("Successfully sent message:", response);
+      })
+      .catch((error) => {
+        console.log("Error sending message:", error);
+      });
+
+    res.redirect("/verify-success");
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "Failed to verify reset password confirmation" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    console.log(token);
+
+    // Check if token is valid and not expired
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired reset token" });
+    }
+    const isSamePassword = await user.comparePassword(password);
+
+    if (isSamePassword) {
+      return res
+        .status(400)
+        .json({ error: "Cannot use the previous password" });
     }
 
-    return value * conversion[unit];
+    // Generate new password hash
+    const hashpwd = await genverifypass.generatePasswordHash(password);
+
+    // Update user's password
+    user.password = hashpwd;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.log("Error in reset password:", error);
+    res.status(500).json({ error: "Failed to reset password" });
+  }
+};
+
+const userIsVerified = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    let userData = await User.findOne({ _id: userId });
+
+    if (userData.isEmailVerified != null && userData.isEmailVerified) {
+      const token = myjwt.generateToken(
+        { userId: userData._id },
+        process.env.JWT_SECRET_KEY
+      );
+      return res.json({ data: userData, token: token });
+    }
+
+    console.log(userData);
+
+    return res.json({ data: userData });
+  } catch (e) {
+    console.log(e);
+    return res.json(e);
+  }
+};
+
+function parseDuration(duration) {
+  if (typeof duration !== "string") {
+    throw new Error("Invalid duration format");
+  }
+
+  const regex = /^(\d+)([smhdwMy]?)$/; // Regular expression to match the duration string
+  const matches = duration.match(regex);
+  if (!matches) {
+    throw new Error("Invalid duration format");
+  }
+
+  const value = parseInt(matches[1]);
+  const unit = matches[2];
+
+  // Define the duration conversion values in milliseconds
+  const conversion = {
+    s: 1000, // seconds
+    m: 1000 * 60, // minutes
+    h: 1000 * 60 * 60, // hours
+    d: 1000 * 60 * 60 * 24, // days
+    w: 1000 * 60 * 60 * 24 * 7, // weeks
+    M: 1000 * 60 * 60 * 24 * 30, // months (approximate)
+    y: 1000 * 60 * 60 * 24 * 365, // years (approximate)
+  };
+
+  if (!conversion[unit]) {
+    throw new Error("Invalid duration unit");
+  }
+
+  return value * conversion[unit];
 }
 
-
 module.exports = {
-    signUpWithEmail,
-    signInWithEmail,
-    signUpWithGoogle,
-    signInWithGoogle,
-    forgotPassword,
-    resetPassword,
-    verifyForgetPassword,
-    userIsVerified,
-    verifyUserEmail
+  signUpWithEmail,
+  signInWithEmail,
+  signUpWithGoogle,
+  signInWithGoogle,
+  forgotPassword,
+  resetPassword,
+  verifyForgetPassword,
+  userIsVerified,
+  verifyUserEmail,
 };
