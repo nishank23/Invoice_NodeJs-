@@ -9,7 +9,8 @@ dist/
 
 public/uploads/
 
-
+config.env
+.env
 # Compiled Java class files
 *.class
 
