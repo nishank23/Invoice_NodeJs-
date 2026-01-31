@@ -29,22 +29,25 @@ Built using Node.js, Express, and MongoDB. This backend powers a Flutter-based i
 ---
 
 ## 📂 Project Structure
-
-│
-├── controllers/        # Route logic
-├── middleware/         # Authentication & error handling
-├── models/             # Mongoose schemas
-├── routes/             # API routes
-├── utils/              # Helper utilities
-├── views/              # EJS invoice templates
-├── data/               # Sample / seed data
-├── app.js              # Express app configuration
-├── index.js            # Server entry point
-└── package.json
-
----
-
----
+Invoice_NodeJs-/                                     
+├──controllers/                                         
+│   └── # Route logic                                                      
+├── middleware/                                     
+│   └── # Authentication & error handling           
+├── models/                                         
+│   └── # Mongoose schemas                          
+├── routes/                                         
+│   └── # API routes                                
+├── utils/                                          
+│   └── # Helper utilities                          
+├── views/                                          
+│   └── # EJS invoice templates                     
+├── data/                                           
+│   └── # Sample / seed data                        
+├── app.js                
+├── index.js                               
+├── config.env.example                                                                                   
+└── package.json                                    
 
 ## ⚙️ Prerequisites
 
