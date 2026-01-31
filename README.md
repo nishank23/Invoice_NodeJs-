@@ -1,68 +1,80 @@
-# Invoice Generator – Backend (Node.js)
+# 🧾 Invoice Generator – Node.js Backend
 
-A scalable backend service for managing clients, products, and invoices.  
-Built using Node.js with RESTful APIs to support a Flutter-based invoice generator application.
+A RESTful backend service for managing clients, products, and invoices.  
+Built using Node.js, Express, and MongoDB. This backend powers a Flutter-based invoice generator application.
 
 ---
 
 ## 🚀 Features
 
-- User authentication (JWT based)
-- Client management (CRUD)
-- Product & service management
-- Invoice creation & tracking
-- Invoice status (Paid / Unpaid / Pending)
-- Analytics support (weekly / monthly data)
-- Secure API architecture
+- 🔐 JWT-based user authentication
+- 👤 Client management (Create, Read, Update, Delete)
+- 🛍 Product / service management
+- 🧾 Invoice creation & tracking
+- 📊 Basic invoice analytics
+- 🔎 Pagination & filtering support
+- 🛡 Protected routes with middleware
 
 ---
 
 ## 🛠 Tech Stack
 
-- Node.js
-- Express.js
-- MongoDB (Mongoose)
-- JWT Authentication
-- REST APIs
+- **Node.js**
+- **Express.js**
+- **MongoDB**
+- **Mongoose**
+- **JWT Authentication**
+- **EJS** (for invoice preview views)
 
 ---
 
 ## 📂 Project Structure
-├── controllers/
-├── models/
-├── routes/
-├── middleware/
-├── config/
-├── utils/
-├── app.js
-└── server.js
 
-
-
----
-
-## ⚙️ Environment Variables
-
-Create a `.env` file in the root directory:
-PORT=3000
-MONGO_URI=your_mongodb_url
-JWT_SECRET=your_secret_key
-
-
+│
+├── controllers/        # Route logic
+├── middleware/         # Authentication & error handling
+├── models/             # Mongoose schemas
+├── routes/             # API routes
+├── utils/              # Helper utilities
+├── views/              # EJS invoice templates
+├── data/               # Sample / seed data
+├── app.js              # Express app configuration
+├── index.js            # Server entry point
+└── package.json
 
 ---
 
-## ▶️ Installation & Run
+---
+
+## ⚙️ Prerequisites
+
+Ensure you have the following installed:
+
+- Node.js (v14 or higher)
+- npm
+- MongoDB (local or cloud)
+
+---
+
+## 🔐 Environment Variables
+
+Create a `config.env` or `.env` file in the root directory:
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+
+---
+
+## ▶️ Installation & Running Locally
 
 ```bash
-git clone https://github.com/your-username/invoice-generator-backend.git
-cd invoice-generator-backend
+git clone https://github.com/nishank23/Invoice_NodeJs-.git
+cd Invoice_NodeJs-
 npm install
 npm start
 
 
-
-
+-------
 
 
 
