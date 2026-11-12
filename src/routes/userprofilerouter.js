@@ -13,7 +13,7 @@ router.post('/user-profile',authenticateToken, upload.single('file'),userControl
 router.get('/user-profile',authenticateToken,userController.getUserProfile);
 
 
-router.post('/user-profile/upload', upload.single('file'), userController.uploadUserProfile);
+router.post('/user-profile/upload', authenticateToken, upload.single('file'), userController.uploadUserProfile);
 
 
 module.exports = router;

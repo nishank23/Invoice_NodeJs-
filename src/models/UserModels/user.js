@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 const userSchema = new mongoose.Schema({
@@ -33,6 +33,17 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.comparePassword = function (enteredPassword) {
     const user = this;
     return bcrypt.compare(enteredPassword, user.password);
+};
+
+// Never leak password hashes or one-time tokens in API responses.
+userSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    delete obj.password;
+    delete obj.resetPasswordToken;
+    delete obj.resetPasswordExpires;
+    delete obj.emailVerificationToken;
+    delete obj.emailVerificationExpires;
+    return obj;
 };
 
 // Create and export User model

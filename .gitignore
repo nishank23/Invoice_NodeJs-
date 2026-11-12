@@ -11,6 +11,10 @@ public/uploads/
 
 config.env
 .env
+
+# Secrets (rotate these — they were previously committed)
+src/config/serviceAccountKey.json
+src/config/firebaseConfig.json
 # Compiled Java class files
 *.class
 

@@ -1,36 +1,45 @@
+// Load environment variables once, before any module reads process.env.
+require('dotenv').config({ path: './config.env' });
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const setBaseUrlMiddleware = require('./src/helpers/middleware');
 
-// const {
-//     verifyForgetPassword
-// }= require('../invoice_test/src/controllers/authcontroller');
 const app = express();
-/*const axios = require('axios');
-const { Parser } = require('htmlparser2');
-
-const cheerio = require('cheerio');
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;*/
-
 
 app.set('view engine', 'ejs');
-
-// Set the views directory (folder where EJS templates are located)
 app.set('views', path.resolve("./views"));
-console.log("mypath" +path.join(__dirname, 'views'))
 
-app.use(express.json());
+// Security headers
+app.use(helmet());
+
+// CORS — restrict origins via CORS_ORIGIN (comma-separated). Defaults to * for the mobile API.
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : '*';
+app.use(cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// General request rate limiting
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000,
+    standardHeaders: true,
+    legacyHeaders: false,
+}));
+
+app.use(express.json({ limit: '1mb' }));
 app.use(setBaseUrlMiddleware);
 
-/*app.use('/public/uploads/product', express.static('public/uploads/product'));*/
-app.use('/public/', express.static('public/'));
-
-app.use(express.static('public'));
-
-
-
+app.use('/public/', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const authrouter = require('./src/routes/authroutes');
 const userprofilerouter = require('./src/routes/userprofilerouter');
@@ -42,97 +51,36 @@ const invoiceRouter = require('./src/routes/invoicerouter');
 const verifyRouter = require('./src/routes/verifyroutes');
 const dashRouter = require('./src/controllers/dashcontroller');
 
-
-
-app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
-
-app.use('/api/v1',authrouter);
-app.use('/api/v1',userprofilerouter);
-app.use('/api/v1',locationRoutes);
-app.use('/api/v1',clientRouter);
-app.use('',verifyRouter);
-app.use('/api/v1/products',productRouter);
-app.use('/api/v1/',estimateRouter);
-app.use('/api/v1/',invoiceRouter);
-app.use('/api/v1/',dashRouter);
-
-
+app.use('/api/v1', authrouter);
+app.use('/api/v1', userprofilerouter);
+app.use('/api/v1', locationRoutes);
+app.use('/api/v1', clientRouter);
+app.use('', verifyRouter);
+app.use('/api/v1/products', productRouter);
+app.use('/api/v1/', estimateRouter);
+app.use('/api/v1/', invoiceRouter);
+app.use('/api/v1/', dashRouter);
 
 app.get('/reset-success', (req, res) => {
-    res.sendFile(__dirname + '/views/reset-success.html');
+    res.sendFile(path.join(__dirname, 'views', 'reset-success.html'));
 });
 app.get('/verify-success', (req, res) => {
-    res.sendFile(__dirname + '/views/verify-success.html');
+    res.sendFile(path.join(__dirname, 'views', 'verify-success.html'));
 });
 
+app.get('/', (req, res) => {
+    res.render('home');
+});
 
-/*src.get('/scrape', async (req, res) => {
-    const { url } = req.query;
-  
-    try {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.setDefaultNavigationTimeout(6000000); // Set a higher timeout value
-  
-      const pagesData = [];
-      await scrapeWebsite(url, page, pagesData);
-  
-      await browser.close();
-  
-      res.json({ pagesData });
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'An error occurred' });
-    }
-  });
-  
-  async function scrapeWebsite(url, page, pagesData) {
-    try {
-      await page.goto(url);
-  
-      const pageContent = await page.content();
-      const visibleText = extractVisibleText(pageContent);
-  
-      pagesData.push({ url, content: visibleText });
-  
-      const links = await page.$$eval('a', (anchors) =>
-        anchors.map((anchor) => anchor.href)
-      );
-  
-      for (const link of links) {
-        const newPage = await page.browser().newPage();
-        await scrapeWebsite(link, newPage, pagesData);
-        await newPage.close();
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-  
-  function extractVisibleText(html) {
-    let visibleText = '';
-  
-    const parser = new Parser({
-      ontext(text) {
-        visibleText += text.trim() + ' ';
-      },
-      onopentag(tagname, attributes) {
-        // You can add additional checks here to filter out specific tags if needed
-      },
-      onclosetag(tagname) {
-        // You can perform any necessary actions when a tag is closed
-      },
-    }, { decodeEntities: true });
-  
-    parser.write(html);
-    parser.end();
-  
-    return visibleText.trim();
-  }*/
-  
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' });
+});
+
+// Global error handler — do not leak stack traces
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
 module.exports = app;

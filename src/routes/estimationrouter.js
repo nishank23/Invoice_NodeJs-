@@ -16,9 +16,9 @@ router.get('/allest', authenticateToken, estimateController.getEstimationByUser)
 
 
 router.get('/curr-est', authenticateToken, estimateController.getLatestEstimationNo);
-router.get('/get-est/:id', estimateController.getAllEstimateData);
+router.get('/get-est/:id', authenticateToken, estimateController.getAllEstimateData);
 
-router.get('/estpreview/:id', estimateController.getEstimationPreview);
+router.get('/estpreview/:id', authenticateToken, estimateController.getEstimationPreview);
 
 router.get('/est/:id', authenticateToken, estimateController.getEstimationById).delete('/est/:id', authenticateToken, estimateController.deleteEstimation);
 

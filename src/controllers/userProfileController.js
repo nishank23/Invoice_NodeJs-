@@ -1,6 +1,4 @@
 const UserProfile = require('../models/UserModels/userprofile');
-const fs = require('fs');
-const pdf = require('pdf-parse');
 
 
 // Create or Update User Profile

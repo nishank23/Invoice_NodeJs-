@@ -6,9 +6,6 @@ const {
     signInWithEmail,signInWithGoogle,signUpWithEmail,signUpWithGoogle,forgotPassword,verifyForgetPassword,resetPassword,userIsVerified
 }= require('../controllers/authcontroller');
 
-
-
-
 router.route("/signin/google").post(signInWithGoogle);
 router.route("/signup/google").post(signUpWithGoogle);
 

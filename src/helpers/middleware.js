@@ -1,6 +1,6 @@
 module.exports = function(req, res, next) {
-    // Replace 'example.com' with your actual live server's domain
-    const baseUrl = 'http://localhost:3000/';
-    res.locals.baseUrl = baseUrl;
+    // Base URL used when rendering invoice/estimation views (e.g. signature images).
+    const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+    res.locals.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
     next();
 };

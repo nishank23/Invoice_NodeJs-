@@ -16,6 +16,6 @@ router.get('/clients', authenticateToken, clientController.getClientsByUser);
 router.get('/clients/:clientId', authenticateToken, clientController.getClientById).delete('/clients/:clientId', authenticateToken, clientController.deleteClient);
 
 
-router.post('/clients/upload', upload.single('file'), clientController.uploadClientProfile);
+router.post('/clients/upload', authenticateToken, upload.single('file'), clientController.uploadClientProfile);
 
 module.exports = router;

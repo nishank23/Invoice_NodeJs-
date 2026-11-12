@@ -53,7 +53,7 @@ Invoice_NodeJs-/
 
 Ensure you have the following installed:
 
-- Node.js (v14 or higher)
+- Node.js (v22 or higher — see `.nvmrc`)
 - npm
 - MongoDB (local or cloud)
 
@@ -61,10 +61,24 @@ Ensure you have the following installed:
 
 ## 🔐 Environment Variables
 
-Create a `config.env` or `.env` file in the root directory:
-PORT=5000
+Create a `config.env` file in the root directory (see `config.env.example`):
+
+```
+PORT=3000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
+JWT_SECRET_KEY=your_jwt_secret_key
+GMAIL_USER=you@gmail.com
+GMAIL_APP_PASSWORD=your_gmail_app_password
+BASE_URL=http://localhost:3000
+CORS_ORIGIN=
+```
+
+Firebase: place your service-account JSON at `src/config/serviceAccountKey.json`
+(gitignored) or set `FIREBASE_SERVICE_ACCOUNT` to its JSON contents.
+
+> ⚠️ Never commit `config.env`, `serviceAccountKey.json`, or any credentials. The
+> Firebase service account key and MongoDB/Gmail credentials were previously
+> committed — see [SECURITY.md](SECURITY.md) for the required rotation steps.
 
 ---
 

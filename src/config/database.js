@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-dotenv.config({ path: './config.env' });
-
-
-const uri = `mongodb+srv://myadmin:admin@studentcluster.nxhqg6z.mongodb.net/?retryWrites=true&w=majority`;
 
 function connectDB() {
-    return mongoose.connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+        console.error('MONGO_URI is not set. Create a config.env file (see config.env.example).');
+        return Promise.reject(new Error('MONGO_URI is not set'));
+    }
+    return mongoose.connect(uri);
 }
 
 module.exports = connectDB;

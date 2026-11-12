@@ -15,9 +15,9 @@ router.get('/allinv', authenticateToken, invoiceController.getInvoiceByUser);
 
 
 router.get('/curr-inv', authenticateToken, invoiceController.getLatestInvoiceNo);
-router.get('/get-inv/:id', invoiceController.getAllInvoiceData);
+router.get('/get-inv/:id', authenticateToken, invoiceController.getAllInvoiceData);
 
-router.get('/invpreview/:id', invoiceController.getInvoicePreview);
+router.get('/invpreview/:id', authenticateToken, invoiceController.getInvoicePreview);
 
 router.get('/inv/:id', authenticateToken, invoiceController.getInvoiceById).delete('/inv/:id', authenticateToken, invoiceController.deleteInvoice);
 
