@@ -1,98 +1,58 @@
-# 🧾 Invoice Generator – Node.js Backend
+# Invoice_NodeJs-
 
-A RESTful backend service for managing clients, products, and invoices.  
-Built using Node.js, Express, and MongoDB. This backend powers a Flutter-based invoice generator application.
+REST backend for an invoicing app: users, clients, products, estimates and invoices, with server-rendered PDFs. It is the API behind the [invoice_manager](https://github.com/nishank23/invoice_manager) Flutter app.
 
----
+## What it does
 
-## 🚀 Features
+- **Accounts.** Email sign-up with a verification link, Google sign-in, password reset by email. JWT on every protected route.
+- **Clients and products.** CRUD with profile and product image uploads.
+- **Estimates and invoices.** Auto-incrementing numbers per user, line items, signature upload, HTML preview and A4 PDF download rendered with Puppeteer.
+- **Dashboard.** Weekly client and invoice counts for the signed-in user, with week-over-week change.
+- **Address data.** Country, state and city lists for address forms, imported from CSV files in `data/`.
 
-- 🔐 JWT-based user authentication
-- 👤 Client management (Create, Read, Update, Delete)
-- 🛍 Product / service management
-- 🧾 Invoice creation & tracking
-- 📊 Basic invoice analytics
-- 🔎 Pagination & filtering support
-- 🛡 Protected routes with middleware
+## Stack
 
----
+Node.js 22, Express, MongoDB with Mongoose, JWT, EJS templates, Puppeteer, Nodemailer, Firebase Admin. Helmet, CORS allow-list and rate limiting are on by default.
 
-## 🛠 Tech Stack
-
-- **Node.js**
-- **Express.js**
-- **MongoDB**
-- **Mongoose**
-- **JWT Authentication**
-- **EJS** (for invoice preview views)
-
----
-
-## 📂 Project Structure
-Invoice_NodeJs-/                                     
-├──controllers/                                         
-│   └── # Route logic                                                      
-├── middleware/                                     
-│   └── # Authentication & error handling           
-├── models/                                         
-│   └── # Mongoose schemas                          
-├── routes/                                         
-│   └── # API routes                                
-├── utils/                                          
-│   └── # Helper utilities                          
-├── views/                                          
-│   └── # EJS invoice templates                     
-├── data/                                           
-│   └── # Sample / seed data                        
-├── app.js                
-├── index.js                               
-├── config.env.example                                                                                   
-└── package.json                                    
-
-## ⚙️ Prerequisites
-
-Ensure you have the following installed:
-
-- Node.js (v22 or higher — see `.nvmrc`)
-- npm
-- MongoDB (local or cloud)
-
----
-
-## 🔐 Environment Variables
-
-Create a `config.env` file in the root directory (see `config.env.example`):
-
-```
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET_KEY=your_jwt_secret_key
-GMAIL_USER=you@gmail.com
-GMAIL_APP_PASSWORD=your_gmail_app_password
-BASE_URL=http://localhost:3000
-CORS_ORIGIN=
-```
-
-Firebase: place your service-account JSON at `src/config/serviceAccountKey.json`
-(gitignored) or set `FIREBASE_SERVICE_ACCOUNT` to its JSON contents.
-
-> ⚠️ Never commit `config.env`, `serviceAccountKey.json`, or any credentials. The
-> Firebase service account key and MongoDB/Gmail credentials were previously
-> committed — see [SECURITY.md](SECURITY.md) for the required rotation steps.
-
----
-
-## ▶️ Installation & Running Locally
+## Run it locally
 
 ```bash
-git clone https://github.com/nishank23/Invoice_NodeJs-.git
-cd Invoice_NodeJs-
+cp config.env.example config.env   # MongoDB URI, JWT secret, Gmail app password, base URL
 npm install
-npm start
+npm run dev
+```
 
+To load the address data, uncomment `importData()` in `index.js` for one start.
 
--------
+Firebase Admin needs a service account: put it at `src/config/serviceAccountKey.json` or set `FIREBASE_SERVICE_ACCOUNT` to its JSON. Both are gitignored.
 
+## API
 
+All routes are under `/api/v1` and need `Authorization: Bearer <token>`, except sign-in, sign-up and the location lists.
 
+| Area | Routes |
+|---|---|
+| Auth | `POST /signup/email`, `/signin/email`, `/signup/google`, `/signin/google`, `/forgotpassword`, `/resetpassword/:token` |
+| Profile | `GET`/`POST /user-profile`, `POST /user-profile/upload` |
+| Clients | `GET /clients`, `GET`/`DELETE /clients/:clientId`, `POST /clients/:clientId?` |
+| Products | `GET`/`POST /products`, `GET /products/:id` |
+| Estimates | `POST /create-est`, `GET /allest`, `GET /curr-est`, `GET /estpreview/:id`, `GET`/`POST`/`DELETE /est/:id` |
+| Invoices | `POST /create-inv`, `GET /allinv`, `GET /curr-inv`, `GET /invpreview/:id`, `GET`/`POST`/`DELETE /inv/:id` |
+| Location | `GET /countries`, `/states/:countryId`, `/cities/:stateId` |
 
+## Project structure
+
+```text
+index.js          starts the server, connects MongoDB, optional CSV import
+app.js            middleware and route mounting
+src/routes/       one router per area
+src/controllers/  request handlers, PDF rendering
+src/models/       Mongoose schemas
+src/helpers/      JWT, uploads, password hashing, input sanitizing
+views/            EJS invoice and estimate templates
+data/             countries, states, cities CSV
+```
+
+## Security
+
+Credentials were committed to this repo in the past and are still in its git history. [SECURITY.md](SECURITY.md) lists what must be rotated.
